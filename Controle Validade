@@ -1,0 +1,2183 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Controle de Validade - Promotor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=Kaushan+Script&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --coke-red:#F40009;
+    --coke-red-2:#E00007;
+    --coke-red-deep:#8A0000;
+    --ink:#1A1414;
+    --ink-soft:#4A4040;
+    --paper:#FFFFFF;
+    --paper-wash:#FFF7F6;
+    --line:#EFE6E5;
+    --line-strong:#E3D5D4;
+    --muted:#8A7B79;
+    --success:#0F8A3E;
+    --danger:#D6242C;
+    --surface:#FBF4F3;
+    --shadow-sm:0 2px 10px rgba(26,20,20,.06);
+    --shadow-md:0 14px 32px rgba(26,20,20,.10);
+    --shadow-red:0 12px 26px rgba(244,0,9,.28);
+    --radius-lg:20px;
+    --radius-md:14px;
+    --radius-sm:10px;
+  }
+
+  *{box-sizing:border-box;}
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important;}
+  }
+
+  body{
+    margin:0;
+    font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    background:var(--paper-wash);
+    color:var(--ink);
+    padding-bottom:104px;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  :focus-visible{
+    outline:2.5px solid var(--coke-red);
+    outline-offset:2px;
+    border-radius:6px;
+  }
+
+  /* ===== HEADER ===== */
+  header{
+    background:linear-gradient(160deg,var(--coke-red) 0%,var(--coke-red-2) 55%,var(--coke-red-deep) 100%);
+    padding:18px 18px 0;
+    position:sticky;
+    top:0;
+    z-index:10;
+    box-shadow:0 6px 24px rgba(138,0,0,.28);
+    overflow:hidden;
+  }
+  .header-inner{
+    max-width:520px;
+    margin:0 auto;
+    padding-bottom:14px;
+  }
+  .brand-mark{
+    display:block;
+    font-family:'Kaushan Script',cursive;
+    font-size:22px;
+    color:#fff;
+    line-height:1;
+    margin-bottom:2px;
+    text-shadow:0 2px 6px rgba(0,0,0,.15);
+  }
+  header h1{
+    margin:0;
+    font-family:'Barlow Condensed',sans-serif;
+    font-weight:800;
+    font-size:23px;
+    letter-spacing:.4px;
+    text-transform:uppercase;
+    color:#fff;
+    line-height:1.1;
+  }
+  header p{
+    margin:4px 0 0;
+    font-size:12.5px;
+    color:rgba(255,255,255,.85);
+    font-weight:500;
+  }
+  .ribbon{
+    display:block;
+    width:200%;
+    height:20px;
+    animation:ribbon-drift 26s linear infinite;
+  }
+  .ribbon path{fill:#fff;}
+  @keyframes ribbon-drift{
+    from{transform:translateX(0);}
+    to{transform:translateX(-50%);}
+  }
+
+  /* ===== LAYOUT ===== */
+  .container{
+    padding:16px;
+    max-width:520px;
+    margin:0 auto;
+  }
+
+  .card{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:var(--radius-lg);
+    padding:18px;
+    margin-bottom:14px;
+    box-shadow:var(--shadow-sm);
+  }
+  .card h2, .section-title{
+    font-family:'Barlow Condensed',sans-serif;
+    font-size:13px;
+    text-transform:uppercase;
+    letter-spacing:1px;
+    color:var(--coke-red);
+    margin:0 0 12px;
+    font-weight:700;
+  }
+
+  label{
+    display:block;
+    font-size:12px;
+    font-weight:500;
+    color:var(--muted);
+    margin-bottom:5px;
+    margin-top:12px;
+  }
+  label:first-of-type{margin-top:0;}
+
+  input[type=text], input[type=date], input[type=number]{
+    width:100%;
+    background:var(--surface);
+    border:1.5px solid var(--line-strong);
+    color:var(--ink);
+    border-radius:var(--radius-sm);
+    padding:12px 13px;
+    font-size:15px;
+    font-family:'Inter',sans-serif;
+    min-height:46px;
+    outline:none;
+    transition:border-color .15s ease, box-shadow .15s ease;
+  }
+  input::placeholder{color:#b3a5a3;}
+  input:focus{border-color:var(--coke-red);box-shadow:0 0 0 4px rgba(244,0,9,.10);}
+
+  .busca-row{display:flex;gap:8px;}
+  .busca-row .autocomplete-wrap{flex:1;}
+  .btn-scan{
+    background:linear-gradient(135deg,var(--coke-red),var(--coke-red-deep));
+    color:#fff;
+    padding:0 16px;
+    min-height:46px;
+    border:none;
+    border-radius:var(--radius-sm);
+    font-size:20px;
+    line-height:1;
+    flex-shrink:0;
+    box-shadow:var(--shadow-red);
+  }
+  .btn-scan:active{transform:scale(.96);}
+
+  .autocomplete-wrap{position:relative;}
+  .suggestions{
+    position:absolute;
+    top:calc(100% + 6px);
+    left:0;right:0;
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:var(--radius-sm);
+    max-height:240px;
+    overflow-y:auto;
+    z-index:20;
+    display:none;
+    box-shadow:var(--shadow-md);
+  }
+  .suggestions div{
+    padding:11px 13px;
+    font-size:13.5px;
+    border-bottom:1px solid var(--line);
+    cursor:pointer;
+  }
+  .suggestions div:last-child{border-bottom:none;}
+  .suggestions div:active, .suggestions div.active{background:var(--paper-wash);}
+  .suggestions .cod{color:var(--muted);font-size:11px;}
+
+  .selected-box{
+    display:none;
+    background:var(--paper-wash);
+    border:1.5px solid var(--coke-red);
+    border-radius:var(--radius-sm);
+    padding:11px 13px;
+    margin-top:9px;
+    font-size:13.5px;
+  }
+  .selected-box .cod{color:var(--muted);font-size:11.5px;margin-top:2px;}
+
+  .row2{display:flex;gap:10px;}
+  .row2>div{flex:1;}
+
+  button{
+    border:none;
+    border-radius:var(--radius-sm);
+    padding:13px 16px;
+    font-size:14.5px;
+    font-weight:700;
+    font-family:'Inter',sans-serif;
+    cursor:pointer;
+    transition:transform .12s ease, opacity .12s ease;
+  }
+
+  .btn-add{
+    width:100%;
+    background:linear-gradient(135deg,var(--coke-red),var(--coke-red-deep));
+    color:#fff;
+    margin-top:14px;
+    box-shadow:var(--shadow-red);
+    font-family:'Barlow Condensed',sans-serif;
+    text-transform:uppercase;
+    letter-spacing:.5px;
+    font-size:15px;
+    font-weight:700;
+  }
+  .btn-add:disabled{background:#e6d9d8;color:#a99998;box-shadow:none;}
+  .btn-add:not(:disabled):active{transform:scale(.98);}
+
+  .btn-outline{
+    background:var(--paper);
+    color:var(--coke-red);
+    border:1.5px solid var(--line-strong);
+  }
+  .btn-outline:active{background:var(--paper-wash);}
+
+  .item{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:var(--radius-md);
+    padding:11px 13px;
+    margin-bottom:9px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:8px;
+    box-shadow:var(--shadow-sm);
+    transition:transform .15s ease, border-color .15s ease;
+  }
+  .item:hover{border-color:var(--coke-red);transform:translateY(-1px);}
+  .item .info{font-size:13.5px;}
+  .item .info b{display:block;font-size:13.5px;margin-bottom:2px;color:var(--ink);}
+  .item .info span{color:var(--muted);font-size:12px;}
+  .item .info .validade-warn{color:var(--danger);font-weight:700;}
+
+  .del-btn{
+    background:transparent;
+    color:var(--danger);
+    border:1.5px solid var(--danger);
+    padding:7px 11px;
+    font-size:12px;
+    border-radius:var(--radius-sm);
+    flex-shrink:0;
+  }
+  .del-btn:active{background:rgba(214,36,44,.08);}
+
+  .empty-msg{
+    text-align:center;
+    color:var(--muted);
+    font-size:13px;
+    padding:20px 0;
+  }
+
+  .footer-bar{
+    position:fixed;
+    bottom:0;left:0;right:0;
+    background:var(--paper);
+    border-top:1px solid var(--line);
+    padding:10px 14px calc(10px + env(safe-area-inset-bottom));
+    display:flex;
+    gap:10px;
+    z-index:30;
+    box-shadow:0 -8px 24px rgba(26,20,20,.06);
+  }
+  .footer-bar button{flex:1;font-size:13px;padding:12px 8px;font-family:'Inter',sans-serif;}
+  .btn-share{background:#128A3E;color:#fff;}
+  .btn-copy{background:var(--surface);color:var(--ink);border:1.5px solid var(--line-strong);}
+  .btn-pdf{background:var(--ink);color:#fff;}
+
+  .counter{
+    font-size:12px;
+    font-weight:600;
+    color:var(--muted);
+    text-align:right;
+    margin-bottom:8px;
+    background:var(--surface);
+    border-radius:8px;
+    padding:7px 10px;
+  }
+
+  .loja-atual-tag{
+    font:700 11px 'Inter',sans-serif;
+    color:var(--coke-red);
+    background:var(--paper-wash);
+    display:inline-block;
+    padding:5px 11px;
+    border-radius:999px;
+    margin-bottom:10px;
+  }
+
+  .lojas-hint{
+    margin:0 0 12px;
+    font-size:12px;
+    line-height:1.5;
+    color:var(--muted);
+  }
+
+  .loja-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:8px;
+    padding:11px 12px;
+    border:1.5px solid var(--line);
+    border-radius:var(--radius-md);
+    margin-bottom:8px;
+    background:var(--paper);
+    transition:border-color .15s ease;
+  }
+  .loja-row.ativa{
+    border-color:var(--coke-red);
+    background:var(--paper-wash);
+  }
+  .loja-info b{display:block;font-size:13.5px;color:var(--ink);margin-bottom:1px;}
+  .loja-info span{font-size:11.5px;color:var(--muted);}
+  .loja-actions{display:flex;gap:6px;flex-shrink:0;}
+  .btn-mini{
+    padding:8px 11px;
+    font-size:11.5px;
+    border-radius:8px;
+    font-weight:700;
+  }
+  .btn-mini-outline{background:var(--paper);color:var(--ink-soft);border:1.5px solid var(--line-strong);}
+  .btn-mini-outline:active{background:var(--surface);}
+  .btn-mini-pdf{background:var(--ink);color:#fff;}
+  .btn-mini-pdf:active{opacity:.85;}
+  .btn-mini-del{background:transparent;color:var(--danger);border:1.5px solid var(--danger);padding:8px 10px;}
+  .btn-mini-del:active{background:rgba(214,36,44,.08);}
+
+  .toast{
+    position:fixed;
+    bottom:84px;left:50%;
+    transform:translateX(-50%);
+    background:var(--ink);
+    color:#fff;
+    padding:11px 20px;
+    border-radius:999px;
+    font-size:13px;
+    box-shadow:0 10px 28px rgba(0,0,0,.28);
+    z-index:150;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .25s;
+  }
+  .toast.show{opacity:1;}
+
+  .scanner-modal{
+    display:none;
+    position:fixed;
+    top:0;left:0;right:0;bottom:0;
+    background:rgba(20,10,10,.92);
+    z-index:100;
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
+    padding:16px;
+  }
+  .scanner-box{
+    width:100%;
+    max-width:420px;
+    background:#000;
+    border-radius:var(--radius-lg);
+    overflow:hidden;
+    border:2px solid var(--coke-red);
+  }
+  #reader{width:100%;}
+  #reader video{width:100% !important;border-radius:calc(var(--radius-lg) - 2px) calc(var(--radius-lg) - 2px) 0 0;}
+  .scanner-hint{
+    text-align:center;
+    color:#ddd;
+    font-size:12.5px;
+    padding:12px 14px;
+    background:#111;
+  }
+  .scanner-hint strong{color:#fff;}
+  .scanner-hint span{display:block;margin-top:4px;color:#bbb;line-height:1.45;}
+  .btn-close-scanner{
+    width:100%;
+    max-width:420px;
+    margin-top:12px;
+    background:rgba(255,255,255,.08);
+    color:#fff;
+    border:1.5px solid rgba(255,255,255,.18);
+  }
+
+  .scan-status{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-top:10px;
+    font-size:11.5px;
+    color:var(--muted);
+  }
+  .scan-dot{
+    width:8px;height:8px;border-radius:50%;
+    background:#ccc;
+    box-shadow:0 0 0 3px rgba(0,0,0,.03);
+  }
+  .scan-dot.ok{background:var(--success);box-shadow:0 0 0 4px rgba(15,138,62,.15);}
+
+  /* ===== TOP NAV (segmented pills) ===== */
+  .top-menu{
+    display:flex;
+    gap:7px;
+    overflow-x:auto;
+    padding:14px 0 16px;
+    scrollbar-width:none;
+  }
+  .top-menu::-webkit-scrollbar{display:none;}
+
+  .menu-btn{
+    flex:0 0 auto;
+    border:1.5px solid var(--line-strong) !important;
+    background:var(--paper) !important;
+    color:var(--ink-soft) !important;
+    padding:9px 15px !important;
+    min-height:40px;
+    font-size:12.5px !important;
+    font-family:'Barlow Condensed',sans-serif;
+    font-weight:700 !important;
+    text-transform:uppercase;
+    letter-spacing:.4px;
+    border-radius:999px !important;
+    box-shadow:none;
+  }
+  .menu-btn.active{
+    background:linear-gradient(135deg,var(--coke-red),var(--coke-red-deep)) !important;
+    color:#fff !important;
+    border-color:transparent !important;
+    box-shadow:var(--shadow-red);
+  }
+
+  .app-section{display:none;}
+  .app-section.active{display:block;}
+
+  /* ===== CHECKLIST ===== */
+  .checklist-head{
+    background:linear-gradient(135deg,var(--coke-red),var(--coke-red-deep));
+    color:#fff;
+    border-radius:var(--radius-lg);
+    padding:16px 18px;
+    margin-bottom:14px;
+    box-shadow:var(--shadow-red);
+  }
+  .checklist-head h2{
+    margin:0 0 4px;
+    font-family:'Barlow Condensed',sans-serif;
+    font-weight:800;
+    font-size:21px;
+    text-transform:uppercase;
+    letter-spacing:.3px;
+  }
+  .checklist-head p{
+    margin:0;
+    font:500 12.5px/1.4 'Inter',sans-serif;
+    color:rgba(255,255,255,.85);
+  }
+
+  .market-types{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:8px;
+    margin:0 0 14px;
+  }
+  .market-type{
+    border:1.5px solid var(--line-strong) !important;
+    background:var(--paper) !important;
+    color:var(--ink-soft) !important;
+    padding:12px 6px !important;
+    min-height:62px;
+    font-size:11.5px !important;
+    font-family:'Inter',sans-serif;
+    font-weight:700;
+    line-height:1.2;
+    border-radius:var(--radius-md) !important;
+    box-shadow:var(--shadow-sm);
+  }
+  .market-type.active{
+    background:linear-gradient(135deg,var(--coke-red),var(--coke-red-deep)) !important;
+    color:#fff !important;
+    border-color:transparent !important;
+    box-shadow:var(--shadow-red);
+  }
+  .market-type small{
+    display:block;
+    margin-top:4px;
+    font-size:9.5px;
+    font-weight:500;
+    opacity:.8;
+  }
+
+  .check-progress{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:999px;
+    height:14px;
+    overflow:hidden;
+    margin:4px 0 6px;
+  }
+  .check-progress-bar{
+    height:100%;
+    width:0%;
+    background:linear-gradient(90deg,var(--coke-red-2),var(--coke-red));
+    border-radius:999px;
+    transition:width .3s ease;
+  }
+  .check-progress-text{
+    text-align:right;
+    font:700 11px 'Inter',sans-serif;
+    color:var(--muted);
+  }
+
+  .check-group{
+    margin-top:14px;
+    border:1px solid var(--line);
+    border-radius:var(--radius-md);
+    overflow:hidden;
+    background:var(--paper);
+  }
+  .check-group-title{
+    margin:0;
+    padding:10px 13px;
+    background:var(--paper-wash);
+    color:var(--coke-red-deep);
+    font:800 11.5px 'Barlow Condensed',sans-serif;
+    text-transform:uppercase;
+    letter-spacing:.5px;
+    border-bottom:1px solid var(--line);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+  }
+  .group-pts{
+    font:700 10.5px 'Inter',sans-serif;
+    color:var(--coke-red);
+  }
+
+  .check-item{
+    display:flex;
+    align-items:flex-start;
+    gap:11px;
+    padding:12px 13px;
+    border-bottom:1px solid var(--line);
+    cursor:pointer;
+  }
+  .check-item:last-child{border-bottom:0;}
+
+  .check-item input[type=checkbox]{
+    appearance:none;
+    -webkit-appearance:none;
+    flex:0 0 auto;
+    width:23px;
+    height:23px;
+    margin:1px 0 0;
+    padding:0;
+    border:2px solid var(--line-strong);
+    border-radius:7px;
+    background:#fff;
+    display:grid;
+    place-content:center;
+    transition:background .15s ease, border-color .15s ease;
+  }
+  .check-item input[type=checkbox]:checked{
+    background:var(--coke-red);
+    border-color:var(--coke-red);
+  }
+  .check-item input[type=checkbox]:checked:after{
+    content:"";
+    width:6px;height:11px;
+    border:solid #fff;
+    border-width:0 2.5px 2.5px 0;
+    transform:rotate(40deg) translate(-1px,-1px);
+  }
+
+  .check-label{
+    flex:1;
+    font:500 13.5px/1.4 'Inter',sans-serif;
+    color:var(--ink);
+  }
+  .check-label small{
+    display:block;
+    color:var(--muted);
+    margin-top:3px;
+    font-size:11px;
+    font-weight:400;
+  }
+
+  .pts-badge{
+    display:inline-block;
+    background:var(--coke-red);
+    color:#fff;
+    font:800 10px 'Barlow Condensed',sans-serif;
+    letter-spacing:.3px;
+    padding:2px 8px;
+    border-radius:999px;
+    margin-left:4px;
+    white-space:nowrap;
+    vertical-align:middle;
+  }
+
+  .cod-badge{
+    display:inline-block;
+    background:var(--surface);
+    color:var(--muted);
+    border:1px solid var(--line-strong);
+    font:700 9.5px 'Inter',monospace;
+    letter-spacing:.2px;
+    padding:1px 6px;
+    border-radius:6px;
+    margin-right:6px;
+    white-space:nowrap;
+    vertical-align:middle;
+  }
+
+  .check-actions{
+    display:flex;
+    gap:8px;
+    margin-top:14px;
+  }
+  .check-actions button{flex:1;min-height:44px;}
+
+  .activation-note{
+    margin-top:14px;
+    padding:11px 13px;
+    background:var(--paper-wash);
+    border:1px dashed var(--line-strong);
+    border-radius:var(--radius-sm);
+    color:var(--ink-soft);
+    font:12px/1.5 'Inter',sans-serif;
+  }
+
+  @media (max-width:380px){
+    .market-types{grid-template-columns:1fr 1fr 1fr;gap:6px;}
+    .market-type{font-size:10.5px !important;padding:10px 4px !important;}
+  }
+
+  @media (min-width:700px){
+    .container{max-width:680px;}
+    .header-inner{max-width:680px;}
+    header h1{font-size:26px;}
+  }
+
+  .product-search{display:flex;gap:8px;margin-bottom:12px}.product-search input{flex:1}.product-count{font-size:12px;color:var(--muted);margin:0 0 10px}.product-list{display:flex;flex-direction:column;gap:8px;max-height:520px;overflow:auto}.product-row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px;border:1px solid var(--line);border-radius:var(--radius-md);background:var(--paper)}.product-row b{display:block;font-size:13px;line-height:1.25}.product-row span{display:block;font-size:11px;color:var(--muted);margin-top:3px}.history-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}.history-stat{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-md);padding:11px 8px;text-align:center}.history-stat strong{display:block;font:800 20px 'Barlow Condensed',sans-serif;color:var(--coke-red)}.history-stat span{font-size:10px;color:var(--muted)}.history-row{border:1px solid var(--line);border-radius:var(--radius-md);padding:12px;margin-bottom:8px;background:var(--paper)}.history-row h3{margin:0 0 4px;font-size:14px}.history-row .meta{font-size:11px;color:var(--muted);line-height:1.5}.history-actions{display:flex;gap:6px;margin-top:9px}.history-actions button{flex:1;padding:8px 9px;font-size:11px}.form-note{font-size:11px;color:var(--muted);line-height:1.45;margin-top:8px}
+
+/* ===== LOGIN / CONTA ONLINE ===== */
+.auth-gate{position:fixed;inset:0;z-index:500;background:linear-gradient(160deg,#f40009 0%,#8a0000 100%);display:flex;align-items:center;justify-content:center;padding:20px;overflow:auto}
+.auth-card{width:100%;max-width:430px;background:#fff;border-radius:24px;padding:24px;box-shadow:0 24px 60px rgba(0,0,0,.28)}
+.auth-brand{font-family:'Kaushan Script',cursive;color:#f40009;font-size:27px;margin-bottom:2px}.auth-card h2{margin:0 0 5px;font-family:'Barlow Condensed',sans-serif;text-transform:uppercase;font-size:25px}.auth-sub{margin:0 0 18px;color:#8a7b79;font-size:12.5px;line-height:1.45}.auth-card label{margin-top:10px}.auth-card input{width:100%;background:#fbf4f3;border:1.5px solid #e3d5d4;border-radius:10px;padding:12px 13px;font-size:15px;min-height:46px}.auth-primary{width:100%;margin-top:14px;background:linear-gradient(135deg,#f40009,#8a0000);color:#fff}.auth-secondary{width:100%;margin-top:8px;background:#fff;color:#4a4040;border:1.5px solid #e3d5d4}.auth-link{border:0;background:none;color:#f40009;padding:8px 0;font-size:12px}.auth-msg{min-height:18px;margin-top:10px;font-size:12px;color:#d6242c}.auth-userbar{position:fixed;top:8px;right:10px;z-index:40;display:none;background:rgba(255,255,255,.96);border:1px solid #efe6e5;border-radius:999px;padding:5px 7px 5px 10px;box-shadow:0 5px 18px rgba(0,0,0,.12);font-size:11px}.auth-userbar button{padding:6px 9px;font-size:10px;margin-left:5px;background:#1a1414;color:#fff}.cloud-badge{display:inline-block;margin-top:6px;background:#eef9f1;color:#0f8a3e;border-radius:999px;padding:4px 8px;font-size:10px;font-weight:700}.auth-loading{position:fixed;inset:0;z-index:510;background:rgba(0,0,0,.65);display:none;align-items:center;justify-content:center;color:#fff;font-weight:700}
+</style>
+</head>
+<body>
+<div id="authGate" class="auth-gate">
+  <div class="auth-card">
+    <div class="auth-brand">Coca-Cola</div>
+    <h2 id="authTitle">Entrar no Controle de Validade</h2>
+    <p class="auth-sub">Use sua conta para salvar produtos, lojas, visitas e checklists na nuvem. Seus dados ficam separados dos outros usuários.</p>
+    <div id="authSignupFields" style="display:none">
+      <label>Nome</label><input id="authName" type="text" placeholder="Seu nome">
+      <label>Telefone (opcional)</label><input id="authPhone" type="text" placeholder="(00) 00000-0000">
+    </div>
+    <label>E-mail</label><input id="authEmail" type="email" autocomplete="email" placeholder="voce@email.com">
+    <label>Senha</label><input id="authPassword" type="password" autocomplete="current-password" placeholder="Mínimo de 6 caracteres">
+    <button id="authSubmit" class="auth-primary">Entrar</button>
+    <button id="authToggle" class="auth-secondary">Criar minha conta</button>
+    <button id="authForgot" class="auth-link">Esqueci minha senha</button>
+    <div id="authMsg" class="auth-msg"></div>
+    <div class="cloud-badge">☁️ Dados online + proteção por usuário</div>
+  </div>
+</div>
+<div id="authLoading" class="auth-loading">Conectando à nuvem...</div>
+<div id="authUserbar" class="auth-userbar"><span id="authUserEmail"></span><button id="authLogout">Sair</button></div>
+
+
+<header>
+  <div class="header-inner">
+    <span class="brand-mark">Coca-Cola</span>
+    <h1>Controle de Validade</h1>
+    <p>Levantamento de campo · Promotor</p>
+  </div>
+  <svg class="ribbon" viewBox="0 0 2400 40" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M0,22 C100,42 200,2 300,22 C400,42 500,2 600,22 C700,42 800,2 900,22 C1000,42 1100,2 1200,22 C1300,42 1400,2 1500,22 C1600,42 1700,2 1800,22 C1900,42 2000,2 2100,22 C2200,42 2300,2 2400,22 L2400,40 L0,40 Z"></path>
+  </svg>
+</header>
+
+<div class="container">
+
+  <nav class="top-menu" aria-label="Menu principal">
+    <button class="menu-btn active" onclick="abrirSecao('validade', this)">📅 Validades</button>
+    <button class="menu-btn" onclick="abrirSecao('checklist', this)">☑️ Checklist</button>
+    <button class="menu-btn" onclick="abrirSecao('produtos', this)">📦 Produtos</button>
+    <button class="menu-btn" onclick="abrirSecao('historico', this)">📋 Histórico</button>
+  </nav>
+
+  <section id="checklistSection" class="app-section">
+    <div class="checklist-head">
+      <h2>Pilar de Ativações</h2>
+      <p>Checklist rápido para conferir a execução da ativação no ponto de venda.</p>
+    </div>
+
+    <div class="market-types">
+      <button class="market-type active" onclick="selecionarTipoMercado('Mini Mercado', this)">
+        🏪 Mini Mercado
+        <small>AS 1-4 / TS-CKTS</small>
+      </button>
+      <button class="market-type" onclick="selecionarTipoMercado('Hiper/Super Mercado', this)">
+        🛒 Hiper/Super
+        <small>AS 5+ / AS 20+ CK</small>
+      </button>
+      <button class="market-type" onclick="selecionarTipoMercado('Atacado (Cash)', this)">
+        📦 Atacado (Cash)
+        <small>Cash & Carry</small>
+      </button>
+    </div>
+
+    <div class="card">
+      <div class="section-title">Checklist da visita</div>
+
+      <div class="check-progress">
+        <div class="check-progress-bar" id="checkProgressBar"></div>
+      </div>
+      <div class="check-progress-text" id="checkProgressText">0% concluído</div>
+
+      <div id="checklistItems"></div>
+
+      <div class="check-actions">
+        <button class="btn-add" onclick="salvarChecklist()">💾 Salvar checklist</button>
+        <button class="btn-outline" onclick="limparChecklist()">↺ Limpar</button>
+      </div>
+
+      <div class="activation-note">
+        <b>Mercado selecionado:</b> <span id="mercadoSelecionado">Mini Mercado</span><br>
+        O checklist fica salvo neste aparelho para você continuar depois.
+      </div>
+    </div>
+  </section>
+
+
+
+  <section id="validadeSection" class="app-section active">
+<div class="card">
+    <h2>Dados da visita</h2>
+    <label>Promotor</label>
+    <input type="text" id="promotor" placeholder="Nome do promotor">
+    <label>Loja</label>
+    <input type="text" id="loja" placeholder="Nome ou código da loja">
+    <label>Data do levantamento</label>
+    <input type="date" id="dataLevantamento">
+  </div>
+
+  <div class="card">
+    <h2>Adicionar item</h2>
+    <label>Buscar produto (nome ou código de barras)</label>
+    <div class="busca-row">
+      <div class="autocomplete-wrap">
+        <input type="text" id="busca" placeholder="Digite para buscar..." autocomplete="off">
+        <div class="suggestions" id="suggestions"></div>
+      </div>
+      <button type="button" class="btn-scan" id="btnScan" title="Escanear código de barras" aria-label="Escanear código de barras">📷</button>
+    </div>
+    <div class="selected-box" id="selectedBox">
+      <b id="selDesc"></b>
+      <div class="cod" id="selCod"></div>
+    </div>
+    <div class="scan-status" id="scanStatus">
+      <span class="scan-dot" id="scanDot"></span>
+      <span id="scanStatusText">Pronto para buscar ou escanear um produto.</span>
+    </div>
+
+    <div class="row2">
+      <div>
+        <label>Data de validade</label>
+        <input type="date" id="validade">
+      </div>
+      <div>
+        <label>Quantidade</label>
+        <input type="number" id="quantidade" min="1" step="1" placeholder="0">
+      </div>
+    </div>
+
+    <button class="btn-add" id="btnAdd" disabled>+ Adicionar item</button>
+  </div>
+
+  <div class="card">
+    <h2>Itens contados</h2>
+    <div class="loja-atual-tag" id="lojaAtualTag" style="display:none;"></div>
+    <div class="counter" id="counter">0 itens</div>
+    <div id="lista"></div>
+  </div>
+
+  <div class="card" id="lojasCard" style="display:none;">
+    <h2>Lojas catalogadas</h2>
+    <p class="lojas-hint">Cada loja mantém seus próprios itens. Abra, gere o PDF ou exclua individualmente.</p>
+    <div id="listaLojas"></div>
+  </div>
+
+  <div class="footer-bar">
+    <button class="btn-copy" id="btnCopy">📋 Copiar</button>
+    <button class="btn-pdf" id="btnPdf">🧾 PDF</button>
+    <button class="btn-share" id="btnShare">📤 Texto</button>
+  </div>
+
+  </section>
+
+  <section id="produtosSection" class="app-section">
+    <div class="checklist-head"><h2>Base de produtos</h2><p>Consulte os produtos e cadastre códigos que ainda não existem na base.</p></div>
+    <div class="card"><h2>Pesquisar produto</h2><div class="product-search"><input type="text" id="produtoBusca" placeholder="Nome ou código de barras..." autocomplete="off"><button type="button" class="btn-outline" id="btnNovoProduto">＋ Novo</button></div><p class="product-count" id="produtoCount"></p><div class="product-list" id="produtoLista"></div></div>
+    <div class="card" id="novoProdutoCard" style="display:none"><h2>Cadastrar produto</h2><label>Nome do produto</label><input type="text" id="novoProdutoNome" placeholder="Ex.: Coca-Cola Original PET 2L"><label>Código de barras</label><input type="text" id="novoProdutoCodigo" inputmode="numeric" placeholder="Escaneado ou digitado"><div class="check-actions"><button class="btn-add" id="btnSalvarProduto">💾 Salvar produto</button><button class="btn-outline" id="btnCancelarProduto">Cancelar</button></div><div class="form-note">Produtos cadastrados por você ficam salvos neste aparelho e passam a aparecer na busca e no leitor.</div></div>
+  </section>
+
+  <section id="historicoSection" class="app-section">
+    <div class="checklist-head"><h2>Histórico de visitas</h2><p>Consulte levantamentos anteriores, reabra uma loja ou gere o PDF novamente.</p></div>
+    <div class="card"><div class="history-summary"><div class="history-stat"><strong id="histVisitas">0</strong><span>visitas</span></div><div class="history-stat"><strong id="histItens">0</strong><span>itens</span></div><div class="history-stat"><strong id="histLojas">0</strong><span>lojas</span></div></div><div id="historicoLista"></div></div>
+  </section>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="scanner-modal" id="scannerModal">
+  <div class="scanner-box">
+    <div id="reader"></div>
+    <div class="scanner-hint"><strong>Aponte a câmera para o código de barras (EAN).</strong><br><span id="scannerEnvironmentHint">A câmera exige HTTPS no celular. Se você abriu um arquivo .html diretamente, publique o site em uma hospedagem HTTPS.</span></div>
+  </div>
+  <button class="btn-close-scanner" id="btnFlipCamera" style="display:none;">🔄 Trocar câmera</button>
+  <button class="btn-close-scanner" id="btnCloseScanner">Cancelar</button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+
+<script>
+let PRODUTOS = [{"descricao": "ABSOLUT SPRITE LT 269 ML 6/1", "codigo": "7894900337006"}, {"descricao": "ADES ABACAXI TP GM 1000 ML 6/1", "codigo": "7894900087000"}, {"descricao": "ADES ABACAXI TP GM 200 ML 6/1", "codigo": "7894900087017"}, {"descricao": "ADES AMENDOA COM BAUNILHA TP 1000 ML 6/1", "codigo": "7894900083507"}, {"descricao": "ADES AMENDOA TP 1000 ML 6/1", "codigo": "7894900083002"}, {"descricao": "ADES COCO TP 1000 ML 6/1", "codigo": "7894900084504"}, {"descricao": "ADES LARANJA TP GM 1000 ML 6/1", "codigo": "7894900087048"}, {"descricao": "ADES LARANJA TP GM 200 ML 6/1", "codigo": "7894900087055"}, {"descricao": "ADES MACA TP GM 1000 ML 6/1", "codigo": "7894900087062"}, {"descricao": "ADES MACA TP GM 200 ML 6/1", "codigo": "7894900087079"}, {"descricao": "ADES MORANGO TP GM 1000 ML 6/1", "codigo": "7894900087086"}, {"descricao": "ADES MORANGO TP GM 200 ML 6/1", "codigo": "7894900087093"}, {"descricao": "ADES ORIGINAL TP GM 1000 ML 6/1", "codigo": "7894900086003"}, {"descricao": "ADES ORIGINAL ZERO TP GM 1000 ML 6/1", "codigo": "7894900086027"}, {"descricao": "ADES PESSEGO TP GM 1000 ML 6/1", "codigo": "7894900087109"}, {"descricao": "ADES PESSEGO TP GM 200 ML 6/1", "codigo": "7894900087116"}, {"descricao": "ADES UVA TP GM 1000 ML 6/1", "codigo": "7894900087123"}, {"descricao": "ADES UVA TP GM 200 ML 6/1", "codigo": "7894900087130"}, {"descricao": "AGUA CRYSTAL C GAS PET 1500 ML 6/1", "codigo": "7894900531015"}, {"descricao": "AGUA CRYSTAL C GAS PET 500 ML 12/1", "codigo": "7894900531008"}, {"descricao": "AGUA CRYSTAL LIMAO PET 510 ML 6/1", "codigo": "7894900526509"}, {"descricao": "AGUA CRYSTAL MACA PET 510 ML 6/1", "codigo": "7894900526004"}, {"descricao": "AGUA CRYSTAL MARACUJA PET 510 ML 6/1", "codigo": "7894900523508"}, {"descricao": "AGUA CRYSTAL NAT 1000 ML 6/1", "codigo": "7894900530025"}, {"descricao": "AGUA CRYSTAL NAT COPO 310 ML 48/1", "codigo": "7894900530049"}, {"descricao": "AGUA CRYSTAL NAT GALAO 5000 ML 1/1", "codigo": "7894900530056"}, {"descricao": "AGUA CRYSTAL NAT L+ P- PET 1500 ML 8/1", "codigo": "7894900530032"}, {"descricao": "AGUA CRYSTAL PET 1500ML SEM GAS CX C/06", "codigo": "7894900530032"}, {"descricao": "AGUA CRYSTAL PET 500 ML SEM GAS CX C/12", "codigo": "7894900530001"}, {"descricao": "BAVARIA LT 350 ML 12/1", "codigo": "7896045506095"}, {"descricao": "BAVARIA PILSEN LATAO 473 ML 12/1", "codigo": "7896045503452"}, {"descricao": "CERPA EXPORT LN 350 ML 4/1", "codigo": "7896388010556"}, {"descricao": "CERPA EXPORT LT 350 ML 12/1", "codigo": "7896388010303"}, {"descricao": "CHA BRANCO LICHIA ZERO PET 450ML 6/1", "codigo": "7891098042316"}, {"descricao": "CHA VERDE LIMAO ZERO PET 450 ML 6/1", "codigo": "7891098041913"}, {"descricao": "COCA COLA CAFE LT 220 ML 6/1", "codigo": "7894900025019"}, {"descricao": "COCA COLA LT 350 ML 12/1", "codigo": "7894900010015"}, {"descricao": "COCA COLA LT 350 ML 6/1 LEVE + PAGUE -", "codigo": "7894900010015"}, {"descricao": "COCA COLA MINI PET 200 ML 12/1", "codigo": "78908901"}, {"descricao": "COCA COLA ORIGINAL PET 1000 ML 6/1", "codigo": "7894900027044"}, {"descricao": "COCA COLA ORIGINAL PET 1500 ML 4/1 LMPM", "codigo": "7894900027006"}, {"descricao": "COCA COLA ORIGINAL PET 1500 ML 6/1", "codigo": "7894900027006"}, {"descricao": "COCA COLA ORIGINAL PET 2000 ML 6/1", "codigo": "7894900027013"}, {"descricao": "COCA COLA ORIGINAL PET 3000 ML 6/1", "codigo": "7894900027037"}, {"descricao": "COCA COLA PET 600 ML 6/1", "codigo": "7894900011609"}, {"descricao": "COCA COLA SEM ACUCAR LT350ML 6/1 LMPM BC", "codigo": "7894900701326"}, {"descricao": "COCA COLA SEM ACUCAR PET 1000 ML 6/1", "codigo": "7894900701715"}, {"descricao": "COCA COLA SLEEK LT 220 ML 12/1", "codigo": "7894900010398"}, {"descricao": "COCA COLA ZERO LT 350 ML 6/1", "codigo": "7894900700015"}, {"descricao": "COCA COLA ZERO MINI PET 200 ML 12/1", "codigo": "78933873"}, {"descricao": "COCA COLA ZERO PET 1500 ML 6/1", "codigo": "7894900701753"}, {"descricao": "COCA COLA ZERO PET 2000 ML 6/1", "codigo": "7894900701517"}, {"descricao": "COCA COLA ZERO PET 600 ML 6/1", "codigo": "7894900701609"}, {"descricao": "COCA COLA ZERO SLEEK LT 220 ML 12/1", "codigo": "7894900700398"}, {"descricao": "CYNAR 900 ML 1/1", "codigo": "7891136065208"}, {"descricao": "DEL VALLE 100% MACA TP 1000 ML 6/1", "codigo": "7894900612004"}, {"descricao": "DEL VALLE FRUT LIMAO 200ML 12/1", "codigo": "7894900551181"}, {"descricao": "DEL VALLE FRUT LIMAO PET 1500 6/1", "codigo": "7894900551068"}, {"descricao": "DEL VALLE KAPO ABACAXI 200 ML 12/1", "codigo": "7894900603705"}, {"descricao": "DEL VALLE KAPO CAJU 200 ML 12/1", "codigo": "7894900650044"}, {"descricao": "DEL VALLE KAPO LARANJA 200 ML 12/1", "codigo": "7894900563702"}, {"descricao": "DEL VALLE KAPO MACA 200 ML 12/1", "codigo": "7894900650013"}, {"descricao": "DEL VALLE KAPO MARACUJA 200 ML 12/1", "codigo": "7894900573701"}, {"descricao": "DEL VALLE KAPO MORANGO 200 ML12/1", "codigo": "7894900583700"}, {"descricao": "DEL VALLE KAPO OLHO DO PIRATA 200ML 12/1", "codigo": "7894900650365"}, {"descricao": "DEL VALLE KAPO UVA 200 ML 12/1", "codigo": "7894900593709"}, {"descricao": "DEL VALLE LIMONADA CLASSIC LT 290ML 6/1", "codigo": "7894900664003"}, {"descricao": "DEL VALLE LIMONADA TROPICAL LT 290ML 6/1", "codigo": "7894900664027"}, {"descricao": "DEL VALLE MAIS NECTAR UVA TP 1000 ML 6/1", "codigo": "7898341430098"}, {"descricao": "DEL VALLE PINK LIMONADA LT 290ML 6/1", "codigo": "7894900664010"}, {"descricao": "DREHER 900ML 1/1", "codigo": "7896010002133"}, {"descricao": "DV 100% LARANJA TP 1000 ML 6/1", "codigo": "7894900610017"}, {"descricao": "DV 100% UVA TP 1000 ML 6/1", "codigo": "7894900611014"}, {"descricao": "DV FRUT FRUTAS CITRICAS PET 1500 ML 6/1", "codigo": "7894900666526"}, {"descricao": "DV FRUT FRUTAS CTRICAS PET 450 ML 6/1", "codigo": "7894900666502"}, {"descricao": "DV FRUT LARANJA LT 310 ML 6/1", "codigo": "7894900556247"}, {"descricao": "DV FRUT LARANJA PET 1000 ML 6/1", "codigo": "7894900556032"}, {"descricao": "DV FRUT LARANJA PET 1500 ML 6/1", "codigo": "7894900556063"}, {"descricao": "DV FRUT LARANJA PET 200 ML 12/1", "codigo": "78938595"}, {"descricao": "DV FRUT LARANJA PET 450 ML 6/1", "codigo": "7894900556056"}, {"descricao": "DV FRUT UVA LT 310 ML 6/1", "codigo": "7894900550269"}, {"descricao": "DV FRUT UVA PET 1000 ML 6/1", "codigo": "7894900550030"}, {"descricao": "DV FRUT UVA PET 1500 ML 6/1", "codigo": "7894900550061"}, {"descricao": "DV FRUT UVA PET 200 ML 12/1", "codigo": "78938588"}, {"descricao": "DV FRUT UVA PET 450 ML 6/1", "codigo": "7894900550054"}, {"descricao": "DV NECTAR LARANJA TP 200ML 18/1", "codigo": "7894900660418"}, {"descricao": "DV NECTAR PESSEGO TP 200ML 18/1", "codigo": "7894900660425"}, {"descricao": "DV NECTAR UVA TP 200ML 18/1", "codigo": "7894900660432"}, {"descricao": "DV ORIGENS UVA 1500 ML 6/1", "codigo": "7894900611076"}, {"descricao": "DVM NECTAR ABACAXI NOVO TP 1000ML 6/1", "codigo": "7894900660364"}, {"descricao": "DVM NECTAR CAJU TP 1000ML 6/1", "codigo": "7898341430081"}, {"descricao": "DVM NECTAR GOIABA LT 290 ML 6/1", "codigo": "7894900660265"}, {"descricao": "DVM NECTAR LARANJA TP 1000ML 6/1", "codigo": "7898341430111"}, {"descricao": "DVM NECTAR PESSEGO LT 290 ML 6/1", "codigo": "7894900660319"}, {"descricao": "DVM NECTAR PESSEGO TP 1000ML 6/1", "codigo": "7898341430036"}, {"descricao": "DVM NECTAR UVA LT 290 ML 6/1", "codigo": "7894900660333"}, {"descricao": "EG 1906 LA MILNUEVE 355ML 6/1", "codigo": "7898953990324"}, {"descricao": "EISENBAHN AMERICAN IPA LN 355 ML 6/1", "codigo": "7898367983813"}, {"descricao": "EISENBAHN AMERICAN IPA LT 350 ML 6/1", "codigo": "7898367984056"}, {"descricao": "EISENBAHN GERMAN PILS 355 ML 12/1", "codigo": "7898367984469"}, {"descricao": "EISENBAHN PALE ALE LN 355 ML 6/1", "codigo": "7898367980034"}, {"descricao": "EISENBAHN PALE ALE LT 350 ML 6/1", "codigo": "7898367984070"}, {"descricao": "EISENBAHN PILSEN LN 355 ML 6/1", "codigo": "7898367980010"}, {"descricao": "EISENBAHN PILSEN LT 269 ML 12/1", "codigo": "7898367984285"}, {"descricao": "EISENBAHN PILSEN LT 350 ML 12/1", "codigo": "7898367983790"}, {"descricao": "EISENBAHN PILSEN UNFILTERED LN 355ML 6/1", "codigo": "7898367984346"}, {"descricao": "EISENBAHN PILSEN UNFILTERED LT350ML 12/1", "codigo": "7898367984377"}, {"descricao": "EISENBAHN SESSION IPA LN 355 ML 6/1", "codigo": "7898367984254"}, {"descricao": "EISENBAHN SESSION IPA LT 350ML 6/1", "codigo": "7898367984391"}, {"descricao": "EISENBAHN WEIZENBIER LN 355 ML 6/1", "codigo": "7898367980041"}, {"descricao": "EMBALAGEM DE SLS - COCA COLA  12/1", "codigo": "7894900087109"}, {"descricao": "ESTRELLA GALICIA 0,0 LT 330ML 6/1", "codigo": "8412598000478"}, {"descricao": "ESTRELLA GALICIA 600ML 24/1", "codigo": "7898953990010"}, {"descricao": "ESTRELLA GALICIA 600ML NAO RET 6/1", "codigo": "7898953990010"}, {"descricao": "ESTRELLA GALICIA LN 355ML 6/1", "codigo": "7898953990140"}, {"descricao": "ESTRELLA GALICIA LT 350ML 12/1", "codigo": "7898953990065"}, {"descricao": "FANTA GUARANA LT 350 ML 6/1", "codigo": "7894900093001"}, {"descricao": "FANTA GUARANA PET 2000 ML 6/1", "codigo": "7894900093056"}, {"descricao": "FANTA GUARANA SLEEK LT 220 ML 12/1", "codigo": "7894900093025"}, {"descricao": "FANTA GUARANA ZERO PET 2000 ML 6/1", "codigo": "7894900094022"}, {"descricao": "FANTA LARANJA LT 350 ML 6/1", "codigo": "7894900030013"}, {"descricao": "FANTA LARANJA MINI PET 200 ML 12/1", "codigo": "78936478"}, {"descricao": "FANTA LARANJA PET 1500 ML 6/1", "codigo": "7894900031751"}, {"descricao": "FANTA LARANJA PET 2000 ML 6/1 - MP", "codigo": "7894900031515"}, {"descricao": "FANTA LARANJA PET 3000 ML 6/1", "codigo": "7894900031706"}, {"descricao": "FANTA LARANJA PET 600 ML 6/1", "codigo": "7894900031607"}, {"descricao": "FANTA LARANJA SLEEK LT 220 ML 12/1", "codigo": "7894900030396"}, {"descricao": "FANTA LARANJA ZERO LT 350 ML 6/1", "codigo": "7894900150018"}, {"descricao": "FANTA LARANJA ZERO PET 2000 ML 6/1", "codigo": "7894900151510"}, {"descricao": "FANTA MARACUJA LT 350ML 6/1", "codigo": "7894900091007"}, {"descricao": "FANTA MARACUJA PET 2000 ML 6/1", "codigo": "7894900091014"}, {"descricao": "FANTA MISTERIO CHUCK PUNCH 600ML 6/1", "codigo": "7894900095180"}, {"descricao": "FANTA MISTERIO CHUCK PUNCH LT 350ML 6/1", "codigo": "7894900095203"}, {"descricao": "FANTA UVA LT 350 ML 6/1", "codigo": "7894900050011"}, {"descricao": "FANTA UVA PET 1500 ML 6/1", "codigo": "7894900051759"}, {"descricao": "FANTA UVA PET 2000 ML 6/1- MP", "codigo": "7894900051513"}, {"descricao": "FANTA UVA SLEEK LT 220 ML 12/1", "codigo": "7894900050394"}, {"descricao": "GARRAFA LS 1000 ML UNIVERSAL", "codigo": "7894900508017"}, {"descricao": "GUARANA KUAT SLEEK LT 220 ML 12/1", "codigo": "7894900910391"}, {"descricao": "ICE TEA COM GAS LIMAO 290ML 6/1", "codigo": "7891098041630"}, {"descricao": "ICE TEA LEAO PESSEGO 1500 ML 6/1", "codigo": "7891098040909"}, {"descricao": "ICE TEA LIMAO 450 ML 6/1", "codigo": "7891098040848"}, {"descricao": "ICE TEA LIMAO PET 1500 ML 6/1", "codigo": "7891098040855"}, {"descricao": "ICE TEA LIMAO PET 200 ML 12/1", "codigo": "78939776"}, {"descricao": "ICE TEA PESSEGO 450 ML 6/1", "codigo": "7891098040893"}, {"descricao": "ICE TEA PESSEGO PET 200 ML 12/1", "codigo": "78939790"}, {"descricao": "ICE TEA PESSEGO ZERO CF 1500 ML 6/1", "codigo": "7891098041142"}, {"descricao": "JACK  COKE LT 269ML 6/1", "codigo": "7894900336535"}, {"descricao": "KAISER LT 350 ML 12/1", "codigo": "7896045512317"}, {"descricao": "KAISER PILSEN LATAO 473 ML 12/1", "codigo": "7896045503414"}, {"descricao": "KUAT LT 350 ML 6/1", "codigo": "7894900910018"}, {"descricao": "KUAT MINI PET 200 ML 12/1", "codigo": "78938564"}, {"descricao": "KUAT PET 1500 ML 6/1", "codigo": "7894900911756"}, {"descricao": "KUAT PET 2000 ML 6/1", "codigo": "7894900911510"}, {"descricao": "KUAT PET 3000 ML 6/1", "codigo": "7894900911701"}, {"descricao": "KUAT PET 600 ML 6/1", "codigo": "7894900911602"}, {"descricao": "LIEBFRAUMILCH 750ML 1/1", "codigo": "7896010001655"}, {"descricao": "MATTE LEAO LIMAO WF 450 ML 6/1", "codigo": "7891098040749"}, {"descricao": "MATTE LEAO LIMAO WF PET 1500 ML 6/1", "codigo": "7891098040589"}, {"descricao": "MATTE LEAO LIMAO ZERO WF PET 1500 ML 6/1", "codigo": "7891098040596"}, {"descricao": "MATTE LEAO NAT WF 450 ML 6/1", "codigo": "7891098040688"}, {"descricao": "MATTE LEAO NAT WF PET 1500 ML 6/1", "codigo": "7891098040565"}, {"descricao": "MATTE LEAO NAT ZERO WF PET 1500 ML 6/1", "codigo": "7891098040572"}, {"descricao": "MATTE LEAO PESSEGO WF PET 1500 ML 6/1", "codigo": "7891098040602"}, {"descricao": "MONSTER ABSOLUTELY ZERO 473ML 6/1", "codigo": "70847022305"}, {"descricao": "MONSTER DRAGON TEA LIMAO LT 473 ML 6/1", "codigo": "70847034803"}, {"descricao": "MONSTER DRAGON TEA PESSEGO LT 473 ML 6/1", "codigo": "1220000250406"}, {"descricao": "MONSTER ENERGY LT 473 ML 6/1", "codigo": "70847022015"}, {"descricao": "MONSTER ENERGY ULTRA PARADISE 473ML 6/1", "codigo": "1220000250000"}, {"descricao": "MONSTER ENERGY ZERO LT 473 6/1", "codigo": "7898938890076"}, {"descricao": "MONSTER KHAOTIC 473ML 6/1", "codigo": "1220000250147"}, {"descricao": "MONSTER MANGO LOCO 473ML 6/1", "codigo": "70847033301"}, {"descricao": "MONSTER PACIFIC PUNCH LT 473ML 6/1", "codigo": "1220000250031"}, {"descricao": "MONSTER PEACHY KEEN 473 ML 6/1", "codigo": "7898938890090"}, {"descricao": "MONSTER PIPELINE PUNCH 473 ML 6/1", "codigo": "7898938890045"}, {"descricao": "MONSTER RIO PUNCH 473 ML 6/1", "codigo": "7898938890120"}, {"descricao": "MONSTER ULTRA FIESTA MANGO 473 ML 6/1", "codigo": "7898938890113"}, {"descricao": "MONSTER ULTRA LT 473 ML 6/1", "codigo": "70847022206"}, {"descricao": "MONSTER ULTRA VIOLET 473ML 6/1", "codigo": "70847033929"}, {"descricao": "MONSTER ULTRA WATERMELON 473ML 6/1", "codigo": "1220000250222"}, {"descricao": "MP 2L 2/1 (1 CC ORIGINAL 1 KUAT)", "codigo": "7894900027402"}, {"descricao": "MP 2L 2/1 (1CC ORIGINAL 1FT LARANJA)", "codigo": "7894900027327"}, {"descricao": "MP 2L 4/1 (2CC ORIGINAL 2FT LARANJA)", "codigo": "7894900027273"}, {"descricao": "OLD EIGHT 900ML 1/1", "codigo": "7896010006322"}, {"descricao": "POWERADE FRUTAS TROPICAIS 500 ML 6/1", "codigo": "7894900508017"}, {"descricao": "POWERADE LARANJA 500 ML 6/1", "codigo": "7894900503029"}, {"descricao": "POWERADE LIMAO 500 ML 6/1", "codigo": "7894900500035"}, {"descricao": "POWERADE MIX DE FRUTAS PET 500ML 6/1", "codigo": "7894900504002"}, {"descricao": "POWERADE MIX DE FRUTAS ZERO 500 ML 6/1", "codigo": "7894900506006"}, {"descricao": "POWERADE SOUR MACA VERDE 500 ML 6/1", "codigo": "7894900509601"}, {"descricao": "POWERADE TANGERINA 500ML 6/1", "codigo": "7894900502046"}, {"descricao": "POWERADE UVA 500 ML 6/1", "codigo": "7894900501001"}, {"descricao": "REIGN LEMON HDZ LT 473 ML 6/1", "codigo": "1220000250055"}, {"descricao": "REIGN MELON MANIA LT 473 6/1", "codigo": "1220000250079"}, {"descricao": "SAGATIBA CRISTALINA 700ML 1/1", "codigo": "7896010000016"}, {"descricao": "SCHWEPPES CITRUS LT 350 ML 6/1", "codigo": "7894900180503"}, {"descricao": "SCHWEPPES CITRUS NEW LT 350 ML 6/1", "codigo": "7894900320015"}, {"descricao": "SCHWEPPES CITRUS PET 1500 ML 6/1", "codigo": "7894900180541"}, {"descricao": "SCHWEPPES CLUB SODA LT 350 ML 6/1", "codigo": "7894900310016"}, {"descricao": "SCHWEPPES GIN TONICA LN 250ML 6/1", "codigo": "7894900184006"}, {"descricao": "SCHWEPPES GIN TONICA LT 269ML 6/1", "codigo": "7894900184075"}, {"descricao": "SCHWEPPES GIN TONICA PINK LT 269ML 6/1", "codigo": "7894900184174"}, {"descricao": "SCHWEPPES MIXED MARACUJA 269ML 6/1", "codigo": "7894900184907"}, {"descricao": "SCHWEPPES SPRITZ LN 250ML 6/1", "codigo": "7894900184303"}, {"descricao": "SCHWEPPES SPRITZ LT 269ML 6/1", "codigo": "7894900184372"}, {"descricao": "SCHWEPPES TONICA LT 350 ML 6/1", "codigo": "7894900300017"}, {"descricao": "SCHWEPPES TONICA ROSE LT 220 ML 6/1", "codigo": "7894900184600"}, {"descricao": "SCHWEPPES TONICA SEM ACUCAR LT 350ML 6/1", "codigo": "7894900360011"}, {"descricao": "SCHWEPPES VODKA CITRUS LN 250ML 6/1", "codigo": "7894900184204"}, {"descricao": "SCHWEPPES VODKA CITRUS LT 269ML 6/1", "codigo": "7894900184273"}, {"descricao": "SKYY 750ML 1/1", "codigo": "7896010004502"}, {"descricao": "SKYY 980ML 1/1", "codigo": "7896010004007"}, {"descricao": "SOL PREMIUM LN 330 ML 6/1", "codigo": "78934115"}, {"descricao": "SOL ZERO LN 330ML 6/1", "codigo": "7896045507368"}, {"descricao": "SPRITE FRESH LEMON 1500 ML 6/1", "codigo": "7894900680522"}, {"descricao": "SPRITE FRESH LEMON 510 ML 6/1", "codigo": "7894900680508"}, {"descricao": "SPRITE LT 350 ML 6/1", "codigo": "7894900681017"}, {"descricao": "SPRITE PET 1500 ML 6/1", "codigo": "7894900681277"}, {"descricao": "SPRITE PET 2000 ML 6/1", "codigo": "7894900681000"}, {"descricao": "SPRITE PET 600 ML 6/1", "codigo": "7894900681246"}, {"descricao": "SPRITE S/ ACUCAR LT 350 ML 6/1", "codigo": "7894900060010"}, {"descricao": "SPRITE S/ ACUCAR MINI PET 200 ML 12/1", "codigo": "78938601"}, {"descricao": "SPRITE S/ ACUCAR PET 2000 ML 6/1", "codigo": "7894900061512"}, {"descricao": "SPRITE SLEEK LT 220 ML 12/1", "codigo": "7894900681178"}, {"descricao": "THEREZOPOLIS BOCK 500ML 6/1", "codigo": "7896371000236"}, {"descricao": "THEREZOPOLIS DUNKEL 500ML 6/1", "codigo": "7896371000199"}, {"descricao": "THEREZOPOLIS GOLD LAGER LN 355ML 6/1", "codigo": "7896371000175"}, {"descricao": "THEREZOPOLIS GOLD LAGER LT 350ML 12/1", "codigo": "7896371000007"}, {"descricao": "THEREZOPOLIS IPA 500ML 6/1", "codigo": "7896371000212"}, {"descricao": "THEREZOPOLIS WEISSIBIER 500ML 6/1", "codigo": "7896371000205"}, {"descricao": "TIGER LT 350 ML 12/1", "codigo": "7896045506705"}, {"descricao": "TIJUCA PILSEN LN 355 ML 6/1", "codigo": "7896388010662"}, {"descricao": "TIJUCA PILSEN LT 350 ML 12/1", "codigo": "7896388010594"}];
+
+let lojasData = {};
+let lojaAtualChave = '';
+let selecionado = null;
+let produtosCustom = [];
+
+function carregarProdutosCustom(){
+  try{ produtosCustom=JSON.parse(localStorage.getItem('controleValidade_produtosCustom')||'[]'); }catch(e){ produtosCustom=[]; }
+  if(!Array.isArray(produtosCustom)) produtosCustom=[];
+  const mapa=new Map(PRODUTOS.map(p=>[String(p.codigo),p]));
+  produtosCustom.forEach(p=>{if(p&&p.descricao&&p.codigo) mapa.set(String(p.codigo),p)});
+  PRODUTOS=Array.from(mapa.values());
+}
+function salvarProdutosCustom(){try{localStorage.setItem('controleValidade_produtosCustom',JSON.stringify(produtosCustom))}catch(e){}}
+carregarProdutosCustom();
+
+function carregarLojasData(){
+  try{
+    const raw = localStorage.getItem('controleValidade_lojas');
+    lojasData = raw ? JSON.parse(raw) : {};
+  }catch(e){
+    lojasData = {};
+  }
+}
+
+function salvarLojasData(){
+  try{
+    localStorage.setItem('controleValidade_lojas', JSON.stringify(lojasData));
+  }catch(e){ /* armazenamento indisponível, segue apenas em memória */ }
+}
+
+function chaveDaLoja(nome){
+  const n = (nome || '').trim();
+  return n ? normaliza(n) : '_sem_loja';
+}
+
+// Garante que a loja atualmente digitada tenha um registro próprio,
+// separando seus itens de qualquer outra loja já catalogada.
+function garantirLojaAtual(){
+  const nomeDigitado = document.getElementById('loja').value;
+  const chave = chaveDaLoja(nomeDigitado);
+  if(!lojasData[chave]){
+    lojasData[chave] = {
+      nomeLoja: nomeDigitado.trim() || 'Loja não informada',
+      promotor: document.getElementById('promotor').value,
+      dataLevantamento: document.getElementById('dataLevantamento').value,
+      itens: []
+    };
+  } else {
+    lojasData[chave].nomeLoja = nomeDigitado.trim() || lojasData[chave].nomeLoja;
+    lojasData[chave].promotor = document.getElementById('promotor').value;
+    lojasData[chave].dataLevantamento = document.getElementById('dataLevantamento').value;
+  }
+  lojaAtualChave = chave;
+  salvarLojasData();
+}
+
+function itensAtuais(){
+  return (lojasData[lojaAtualChave] && lojasData[lojaAtualChave].itens) || [];
+}
+
+function abrirLoja(chave){
+  const l = lojasData[chave];
+  if(!l) return;
+  lojaAtualChave = chave;
+  document.getElementById('loja').value = l.nomeLoja;
+  document.getElementById('promotor').value = l.promotor || '';
+  if(l.dataLevantamento) document.getElementById('dataLevantamento').value = l.dataLevantamento;
+  renderLista();
+  renderLojasCatalogadas();
+  showToast('Loja aberta: ' + l.nomeLoja);
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function excluirLoja(chave){
+  const l = lojasData[chave];
+  if(!l) return;
+  if(!confirm(`Excluir todos os itens de "${l.nomeLoja}"? Essa ação não pode ser desfeita.`)) return;
+  delete lojasData[chave];
+  if(lojaAtualChave === chave){
+    lojaAtualChave = '';
+    document.getElementById('loja').value = '';
+  }
+  salvarLojasData();
+  renderLista();
+  renderLojasCatalogadas();
+  renderHistorico();
+  showToast('Loja removida.');
+}
+
+function renderLojasCatalogadas(){
+  const card = document.getElementById('lojasCard');
+  const cont = document.getElementById('listaLojas');
+  const chaves = Object.keys(lojasData).filter(ch => lojasData[ch].itens.length > 0 || ch === lojaAtualChave);
+  if(chaves.length === 0){
+    card.style.display = 'none';
+    return;
+  }
+  card.style.display = 'block';
+  cont.innerHTML = chaves.map(ch => {
+    const l = lojasData[ch];
+    const ativa = ch === lojaAtualChave;
+    return `<div class="loja-row ${ativa ? 'ativa' : ''}">
+      <div class="loja-info">
+        <b>${l.nomeLoja}</b>
+        <span>${l.itens.length} ${l.itens.length===1 ? 'item' : 'itens'}${ativa ? ' · em edição' : ''}</span>
+      </div>
+      <div class="loja-actions">
+        <button type="button" class="btn-mini btn-mini-outline" data-abrir="${ch}">Abrir</button>
+        <button type="button" class="btn-mini btn-mini-pdf" data-pdf="${ch}">PDF</button>
+        <button type="button" class="btn-mini btn-mini-del" data-del="${ch}" aria-label="Excluir loja">✕</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+document.getElementById('listaLojas').addEventListener('click', (e) => {
+  const abrirBtn = e.target.closest('[data-abrir]');
+  const pdfBtn = e.target.closest('[data-pdf]');
+  const delBtn = e.target.closest('[data-del]');
+  if(abrirBtn) abrirLoja(abrirBtn.dataset.abrir);
+  else if(pdfBtn) gerarPDF(pdfBtn.dataset.pdf);
+  else if(delBtn) excluirLoja(delBtn.dataset.del);
+});
+
+document.getElementById('loja').addEventListener('change', () => {
+  garantirLojaAtual();
+  renderLista();
+  renderLojasCatalogadas();
+});
+
+document.getElementById('promotor').addEventListener('change', () => {
+  if(lojasData[lojaAtualChave]){
+    lojasData[lojaAtualChave].promotor = document.getElementById('promotor').value;
+    salvarLojasData();
+  }
+});
+
+document.getElementById('dataLevantamento').addEventListener('change', () => {
+  if(lojasData[lojaAtualChave]){
+    lojasData[lojaAtualChave].dataLevantamento = document.getElementById('dataLevantamento').value;
+    salvarLojasData();
+  }
+});
+
+const buscaInput = document.getElementById('busca');
+const suggestionsBox = document.getElementById('suggestions');
+const selectedBox = document.getElementById('selectedBox');
+const selDesc = document.getElementById('selDesc');
+const selCod = document.getElementById('selCod');
+const btnAdd = document.getElementById('btnAdd');
+const listaEl = document.getElementById('lista');
+const counterEl = document.getElementById('counter');
+const validadeInput = document.getElementById('validade');
+const quantidadeInput = document.getElementById('quantidade');
+
+// Data padrão = hoje
+document.getElementById('dataLevantamento').valueAsDate = new Date();
+
+function normaliza(str){
+  return str.toString().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+}
+
+function renderSuggestions(query){
+  const q = normaliza(query);
+  if(!q){ suggestionsBox.style.display='none'; suggestionsBox.innerHTML=''; return; }
+  const matches = PRODUTOS.filter(p => normaliza(p.descricao).includes(q) || p.codigo.includes(query)).slice(0,30);
+  if(matches.length===0){
+    suggestionsBox.innerHTML = '<div style="color:var(--muted);cursor:default;">Nenhum produto encontrado</div>';
+    suggestionsBox.style.display='block';
+    return;
+  }
+  suggestionsBox.innerHTML = matches.map((p,i) =>
+    `<div data-idx="${PRODUTOS.indexOf(p)}"><div>${p.descricao}</div><div class="cod">Código: ${p.codigo}</div></div>`
+  ).join('');
+  suggestionsBox.style.display='block';
+}
+
+buscaInput.addEventListener('input', (e) => {
+  selecionado = null;
+  selectedBox.style.display='none';
+  checkFormValido();
+  renderSuggestions(e.target.value);
+});
+
+buscaInput.addEventListener('focus', (e) => {
+  if(e.target.value) renderSuggestions(e.target.value);
+});
+
+document.addEventListener('click', (e) => {
+  if(!e.target.closest('.autocomplete-wrap')){
+    suggestionsBox.style.display='none';
+  }
+});
+
+suggestionsBox.addEventListener('click', (e) => {
+  const div = e.target.closest('div[data-idx]');
+  if(!div) return;
+  const idx = parseInt(div.dataset.idx);
+  selecionado = PRODUTOS[idx];
+  buscaInput.value = selecionado.descricao;
+  selDesc.textContent = selecionado.descricao;
+  selCod.textContent = 'Código: ' + selecionado.codigo;
+  selectedBox.style.display='block';
+  suggestionsBox.style.display='none';
+  checkFormValido();
+});
+
+function checkFormValido(){
+  const ok = selecionado && validadeInput.value && quantidadeInput.value && parseInt(quantidadeInput.value) > 0;
+  btnAdd.disabled = !ok;
+}
+validadeInput.addEventListener('input', checkFormValido);
+quantidadeInput.addEventListener('input', checkFormValido);
+
+function formatDate(iso){
+  if(!iso) return '';
+  const [y,m,d] = iso.split('-');
+  return `${d}/${m}/${y}`;
+}
+
+function diasParaVencer(iso){
+  const hoje = new Date();
+  hoje.setHours(0,0,0,0);
+  const venc = new Date(iso + 'T00:00:00');
+  return Math.round((venc - hoje) / 86400000);
+}
+
+btnAdd.addEventListener('click', () => {
+  if(!selecionado) return;
+  garantirLojaAtual();
+  lojasData[lojaAtualChave].itens.push({
+    descricao: selecionado.descricao,
+    codigo: selecionado.codigo,
+    validade: validadeInput.value,
+    quantidade: parseInt(quantidadeInput.value)
+  });
+  salvarLojasData();
+  // reset
+  selecionado = null;
+  buscaInput.value = '';
+  validadeInput.value = '';
+  quantidadeInput.value = '';
+  selectedBox.style.display = 'none';
+  btnAdd.disabled = true;
+  renderLista();
+  renderLojasCatalogadas();
+  renderHistorico();
+  buscaInput.focus();
+});
+
+function renderLista(){
+  const itens = itensAtuais();
+  const tag = document.getElementById('lojaAtualTag');
+  if(lojasData[lojaAtualChave]){
+    tag.style.display = 'inline-block';
+    tag.textContent = '📍 ' + lojasData[lojaAtualChave].nomeLoja;
+  } else {
+    tag.style.display = 'none';
+  }
+  counterEl.textContent = itens.length + (itens.length===1 ? ' item' : ' itens');
+  if(itens.length===0){
+    listaEl.innerHTML = '<div class="empty-msg">Nenhum item adicionado ainda nesta loja.</div>';
+    return;
+  }
+  listaEl.innerHTML = itens.map((it, i) => {
+    const dias = diasParaVencer(it.validade);
+    const warn = dias <= 7;
+    return `<div class="item">
+      <div class="info">
+        <b>${it.descricao}</b>
+        <span>Código: ${it.codigo} · Qtd: ${it.quantidade}</span><br>
+        <span class="${warn ? 'validade-warn' : ''}">Validade: ${formatDate(it.validade)}${warn ? (dias < 0 ? ' (VENCIDO)' : ' (' + dias + ' dias)') : ''}</span>
+      </div>
+      <button class="del-btn" data-i="${i}">Remover</button>
+    </div>`;
+  }).join('');
+}
+
+listaEl.addEventListener('click', (e) => {
+  const btn = e.target.closest('.del-btn');
+  if(!btn) return;
+  const i = parseInt(btn.dataset.i);
+  itensAtuais().splice(i,1);
+  salvarLojasData();
+  renderLista();
+  renderLojasCatalogadas();
+});
+
+function montarTexto(chave){
+  const ch = chave || lojaAtualChave;
+  const dados = lojasData[ch] || {
+    promotor: document.getElementById('promotor').value,
+    nomeLoja: document.getElementById('loja').value,
+    dataLevantamento: document.getElementById('dataLevantamento').value,
+    itens: []
+  };
+  const promotor = dados.promotor || '(não informado)';
+  const loja = dados.nomeLoja || '(não informado)';
+  const dataLev = dados.dataLevantamento ? formatDate(dados.dataLevantamento) : '(não informado)';
+  const itensLoja = dados.itens || [];
+
+  let txt = `📋 *CONTROLE DE VALIDADE*\n`;
+  txt += `Promotor: ${promotor}\n`;
+  txt += `Loja: ${loja}\n`;
+  txt += `Data do levantamento: ${dataLev}\n\n`;
+
+  if(itensLoja.length===0){
+    txt += `Nenhum item registrado.\n`;
+  } else {
+    itensLoja.forEach((it,i) => {
+      txt += `${i+1}. ${it.descricao}\n`;
+      txt += `   Código: ${it.codigo} | Validade: ${formatDate(it.validade)} | Qtd: ${it.quantidade}\n`;
+    });
+    txt += `\nTotal de itens: ${itensLoja.length}`;
+  }
+  return txt;
+}
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2200);
+}
+
+document.getElementById('btnCopy').addEventListener('click', async () => {
+  const txt = montarTexto();
+  try{
+    await navigator.clipboard.writeText(txt);
+    showToast('Copiado para a área de transferência!');
+  }catch(e){
+    showToast('Não foi possível copiar automaticamente.');
+  }
+});
+
+document.getElementById('btnShare').addEventListener('click', async () => {
+  const txt = montarTexto();
+  if(navigator.share){
+    try{
+      await navigator.share({ text: txt, title: 'Controle de Validade' });
+    }catch(e){ /* usuário cancelou */ }
+  } else {
+    const url = 'https://wa.me/?text=' + encodeURIComponent(txt);
+    window.open(url, '_blank');
+  }
+});
+
+carregarLojasData();
+renderLista();
+renderLojasCatalogadas();
+renderProdutos();
+renderHistorico();
+
+// ---------- Produtos e Histórico ----------
+function escaparHtml(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function renderProdutos(){
+ const q=normaliza(document.getElementById('produtoBusca').value.trim()), lista=document.getElementById('produtoLista');
+ const custom=new Set(produtosCustom.map(p=>String(p.codigo)));
+ const matches=PRODUTOS.filter(p=>!q||normaliza(p.descricao).includes(q)||String(p.codigo).includes(q)).slice(0,120);
+ document.getElementById('produtoCount').textContent=`${PRODUTOS.length} produtos disponíveis · ${produtosCustom.length} personalizados`;
+ lista.innerHTML=matches.length?matches.map(p=>{const c=custom.has(String(p.codigo));return `<div class="product-row"><div><b>${escaparHtml(p.descricao)}</b><span>Código: ${escaparHtml(p.codigo)}${c?' · personalizado':''}</span></div>${c?`<button type="button" class="btn-mini btn-mini-del" data-prod-del="${escaparHtml(p.codigo)}">Excluir</button>`:''}</div>`}).join(''):'<div class="empty-msg">Nenhum produto encontrado.</div>';
+}
+function abrirCadastroProduto(codigo=''){document.getElementById('novoProdutoCard').style.display='block';document.getElementById('novoProdutoCodigo').value=codigo;document.getElementById('novoProdutoNome').focus();document.getElementById('novoProdutoCard').scrollIntoView({behavior:'smooth',block:'start'})}
+function salvarNovoProduto(){
+ const nome=document.getElementById('novoProdutoNome').value.trim(), codigo=document.getElementById('novoProdutoCodigo').value.replace(/\D/g,'');
+ if(!nome)return showToast('Informe o nome do produto.'); if(!codigo)return showToast('Informe o código de barras.');
+ if(PRODUTOS.some(p=>String(p.codigo)===codigo))return showToast('Esse código já está cadastrado.');
+ const novo={descricao:nome,codigo}; produtosCustom.push(novo); PRODUTOS.push(novo); salvarProdutosCustom();
+ document.getElementById('novoProdutoNome').value='';document.getElementById('novoProdutoCodigo').value='';document.getElementById('novoProdutoCard').style.display='none';renderProdutos();showToast('Produto cadastrado com sucesso!');
+}
+function excluirProdutoCustom(codigo){const p=produtosCustom.find(x=>String(x.codigo)===String(codigo));if(!p)return;if(!confirm(`Excluir o produto "${p.descricao}" da base personalizada?`))return;produtosCustom=produtosCustom.filter(x=>String(x.codigo)!==String(codigo));PRODUTOS=PRODUTOS.filter(x=>String(x.codigo)!==String(codigo));salvarProdutosCustom();renderProdutos();showToast('Produto removido da base personalizada.')}
+function renderHistorico(){
+ const lista=document.getElementById('historicoLista'), entradas=Object.entries(lojasData).filter(([,l])=>l&&(l.itens||[]).length).sort((a,b)=>String(b[1].dataLevantamento||'').localeCompare(String(a[1].dataLevantamento||'')));
+ document.getElementById('histVisitas').textContent=entradas.length;document.getElementById('histItens').textContent=entradas.reduce((n,[,l])=>n+(l.itens||[]).length,0);document.getElementById('histLojas').textContent=new Set(entradas.map(([,l])=>normaliza(l.nomeLoja||''))).size;
+ if(!entradas.length){lista.innerHTML='<div class="empty-msg">Nenhuma visita salva ainda.</div>';return}
+ lista.innerHTML=entradas.map(([ch,l])=>{const itens=l.itens||[], venc=itens.filter(i=>diasParaVencer(i.validade)<0).length, prox=itens.filter(i=>{const d=diasParaVencer(i.validade);return d>=0&&d<=7}).length;return `<div class="history-row"><h3>📍 ${escaparHtml(l.nomeLoja||'Loja não informada')}</h3><div class="meta">Promotor: ${escaparHtml(l.promotor||'não informado')} · Data: ${escaparHtml(l.dataLevantamento?formatDate(l.dataLevantamento):'não informada')}<br>${itens.length} itens · ${venc} vencidos · ${prox} vencendo em até 7 dias</div><div class="history-actions"><button class="btn-outline" data-hist-open="${escaparHtml(ch)}">Abrir</button><button class="btn-mini-pdf" data-hist-pdf="${escaparHtml(ch)}">🧾 PDF</button><button class="btn-mini-del" data-hist-del="${escaparHtml(ch)}">Excluir</button></div></div>`}).join('');
+}
+document.getElementById('produtoBusca').addEventListener('input',renderProdutos);document.getElementById('btnNovoProduto').addEventListener('click',()=>abrirCadastroProduto());document.getElementById('btnCancelarProduto').addEventListener('click',()=>document.getElementById('novoProdutoCard').style.display='none');document.getElementById('btnSalvarProduto').addEventListener('click',salvarNovoProduto);document.getElementById('produtoLista').addEventListener('click',e=>{const b=e.target.closest('[data-prod-del]');if(b)excluirProdutoCustom(b.dataset.prodDel)});document.getElementById('historicoLista').addEventListener('click',e=>{const o=e.target.closest('[data-hist-open]'),p=e.target.closest('[data-hist-pdf]'),d=e.target.closest('[data-hist-del]');if(o){abrirLoja(o.dataset.histOpen);abrirSecao('validade',document.querySelector('.menu-btn'))}else if(p)gerarPDF(p.dataset.histPdf);else if(d)excluirLoja(d.dataset.histDel);setTimeout(renderHistorico,50)});
+
+// ---------- Scanner de código de barras ----------
+let html5QrCode = null;
+let scannerAtivo = false;
+let camerasDisponiveis = [];
+let cameraAtualIndex = 0;
+
+function selecionarProduto(produto){
+  selecionado = produto;
+  buscaInput.value = produto.descricao;
+  selDesc.textContent = produto.descricao;
+  selCod.textContent = 'Código: ' + produto.codigo;
+  selectedBox.style.display = 'block';
+  suggestionsBox.style.display = 'none';
+  checkFormValido();
+}
+
+function processarCodigoEscaneado(codigo){
+  codigo = codigo.trim();
+  // tenta achar exato, ou ignorando zeros à esquerda
+  let produto = PRODUTOS.find(p => p.codigo === codigo);
+  if(!produto){
+    const semZeros = codigo.replace(/^0+/, '');
+    produto = PRODUTOS.find(p => p.codigo.replace(/^0+/, '') === semZeros);
+  }
+  if(produto){
+    selecionarProduto(produto);
+    beepLeitura();
+    atualizarStatus('Produto lido com sucesso: ' + produto.descricao, true);
+    showToast('🔊 Beep! ' + produto.descricao);
+    validadeInput.focus();
+  } else {
+    buscaInput.value = codigo;
+    renderSuggestions(codigo);
+    atualizarStatus('Código não cadastrado. Cadastre o produto na aba Produtos.', false);
+    showToast('⚠️ Código não cadastrado. Abrindo cadastro...');
+    fecharScanner();
+    setTimeout(()=>{ const b=document.querySelector('.menu-btn[onclick*="produtos"]'); abrirSecao('produtos',b); abrirCadastroProduto(codigo); },120);
+  }
+}
+
+function isCameraSupported(){
+  return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+}
+
+// Atualiza o indicador de status do leitor (bolinha + texto acima do formulário de busca).
+function atualizarStatus(msg, ok=false){
+  const text = document.getElementById('scanStatusText');
+  const dot = document.getElementById('scanDot');
+  if(text) text.textContent = msg || '';
+  if(dot) dot.classList.toggle('ok', !!ok);
+}
+
+// Bipe curto ao reconhecer um código de barras (Web Audio API, sem depender de arquivo de áudio).
+function beepLeitura(){
+  try{
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.value = 1500;
+    gain.gain.setValueAtTime(0.001, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.2, ctx.currentTime + 0.01);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.16);
+    osc.onended = () => ctx.close();
+  }catch(e){ /* som indisponível neste navegador, segue sem travar o app */ }
+}
+
+function atualizarStatusScanner(msg, ok=false){
+  atualizarStatus(msg, ok);
+  const hint = document.getElementById('scannerEnvironmentHint');
+  if(hint){
+    if(window.isSecureContext){
+      hint.textContent = 'Site seguro (HTTPS): a câmera pode ser usada após você autorizar o acesso.';
+    }else{
+      hint.textContent = 'A câmera do celular exige HTTPS. Publique este arquivo em Netlify, GitHub Pages ou outra hospedagem HTTPS.';
+    }
+  }
+}
+
+async function abrirScanner(){
+  if(typeof Html5Qrcode === 'undefined'){
+    showToast('Leitor de código não carregou. Verifique sua internet e recarregue a página.');
+    atualizarStatusScanner('Biblioteca da câmera não carregada.', false);
+    return;
+  }
+
+  if(!window.isSecureContext && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1'){
+    showToast('A câmera precisa de HTTPS. Abra a versão publicada do site.');
+    atualizarStatusScanner('Câmera bloqueada: este endereço não é HTTPS.', false);
+    return;
+  }
+
+  if(!isCameraSupported()){
+    showToast('Seu navegador não disponibilizou acesso à câmera.');
+    atualizarStatusScanner('Câmera não suportada neste navegador.', false);
+    return;
+  }
+
+  const modal = document.getElementById('scannerModal');
+  modal.style.display = 'flex';
+  scannerAtivo = true;
+  atualizarStatusScanner('Solicitando acesso à câmera...');
+
+  try{
+    if(html5QrCode){
+      try{ await html5QrCode.stop(); }catch(e){}
+      try{ html5QrCode.clear(); }catch(e){}
+    }
+    html5QrCode = new Html5Qrcode('reader');
+
+    const config = {
+      fps: 12,
+      qrbox: { width: 280, height: 150 },
+      aspectRatio: 1.777778,
+      formatsToSupport: [
+        Html5QrcodeSupportedFormats.EAN_13,
+        Html5QrcodeSupportedFormats.EAN_8,
+        Html5QrcodeSupportedFormats.UPC_A,
+        Html5QrcodeSupportedFormats.UPC_E,
+        Html5QrcodeSupportedFormats.CODE_128,
+        Html5QrcodeSupportedFormats.CODE_39
+      ],
+      rememberLastUsedCamera: true,
+      showTorchButtonIfSupported: true,
+      showZoomSliderIfSupported: true,
+      // Pede foco automático contínuo, ajuda a focar em códigos próximos/manuseados na mão.
+      focusMode: 'continuous',
+      videoConstraints: { advanced: [{ focusMode: 'continuous' }] }
+    };
+
+    // Busca a lista de câmeras só para popular o botão de troca (nomes/rótulos).
+    let cameras = [];
+    try{ cameras = await Html5Qrcode.getCameras(); }catch(e){ cameras = []; }
+
+    if(!cameras.length){
+      throw new Error('Nenhuma câmera encontrada ou permissão negada.');
+    }
+
+    let deviceIdConfirmadoFrontal = null;
+    try{
+      // Pede a câmera frontal diretamente ao navegador (mais confiável do que adivinhar
+      // pelo nome/rótulo da câmera, que em muitos aparelhos vem genérico tipo "Camera 1").
+      await html5QrCode.start(
+        { facingMode: { exact: 'user' } },
+        config,
+        (decodedText) => {
+          if(!scannerAtivo) return;
+          scannerAtivo = false;
+          processarCodigoEscaneado(decodedText);
+          pararScannerSemEsperar();
+        },
+        () => {}
+      );
+      const settings = html5QrCode.getRunningTrackSettings ? html5QrCode.getRunningTrackSettings() : null;
+      deviceIdConfirmadoFrontal = settings && settings.deviceId;
+    }catch(eFacing){
+      // Aparelho/navegador não aceitou facingMode exato: volta para o método antigo por id de câmera.
+      deviceIdConfirmadoFrontal = null;
+    }
+
+    // Câmeras candidatas para o botão de troca: mantém só as marcadas como frontal/selfie (se houver mais de uma).
+    let candidatas = cameras.filter(c => /front|user|frontal|selfie/i.test(c.label || ''));
+    if(!candidatas.length) candidatas = cameras;
+
+    if(deviceIdConfirmadoFrontal){
+      // Garante que a câmera que o navegador confirmou ser frontal fique em primeiro na lista.
+      candidatas = candidatas.filter(c => c.id !== deviceIdConfirmadoFrontal);
+      const infoOriginal = cameras.find(c => c.id === deviceIdConfirmadoFrontal);
+      candidatas.unshift({ id: deviceIdConfirmadoFrontal, label: (infoOriginal && infoOriginal.label) || 'Câmera frontal' });
+    }
+
+    camerasDisponiveis = candidatas;
+    cameraAtualIndex = 0;
+
+    const btnFlip = document.getElementById('btnFlipCamera');
+    if(btnFlip) btnFlip.style.display = camerasDisponiveis.length > 1 ? 'block' : 'none';
+
+    if(!deviceIdConfirmadoFrontal){
+      // Fallback: facingMode exato falhou, inicia manualmente por id de câmera como antes.
+      await iniciarStreamCamera(cameraAtualIndex, config);
+    }else{
+      const numeroLente = 1;
+      atualizarStatusScanner('Lente ' + numeroLente + ' de ' + camerasDisponiveis.length + ' (frontal) ativa: aponte para o código de barras.', true);
+    }
+  }catch(err){
+    console.error('Erro ao iniciar câmera:', err);
+    let msg = 'Não foi possível acessar a câmera.';
+    if(/permission|notallowed|denied/i.test(String(err))) msg = 'Permissão da câmera negada. Autorize a câmera nas configurações do navegador.';
+    else if(/https|secure|insecure/i.test(String(err))) msg = 'A câmera exige HTTPS.';
+    showToast(msg);
+    atualizarStatusScanner(msg, false);
+  }
+}
+
+async function iniciarStreamCamera(index, config){
+  const camera = camerasDisponiveis[index];
+  if(!camera) throw new Error('Câmera indisponível.');
+
+  await html5QrCode.start(
+    camera.id,
+    config,
+    (decodedText) => {
+      if(!scannerAtivo) return;
+      scannerAtivo = false;
+      processarCodigoEscaneado(decodedText);
+      pararScannerSemEsperar();
+    },
+    () => {}
+  );
+
+  // Reforça o foco automático contínuo diretamente na track já em execução
+  // (alguns navegadores só aceitam esse ajuste depois que a câmera já está ativa).
+  try{
+    if(typeof html5QrCode.applyVideoConstraints === 'function'){
+      await html5QrCode.applyVideoConstraints({ advanced: [{ focusMode: 'continuous' }] });
+    }
+  }catch(e){ /* navegador/aparelho não suporta ajuste manual de foco, segue com o padrão */ }
+
+  const numeroLente = camerasDisponiveis.indexOf(camera) + 1;
+  atualizarStatusScanner('Lente ' + numeroLente + ' de ' + camerasDisponiveis.length + ' ativa: aponte para o código de barras.', true);
+}
+
+async function alternarCamera(){
+  if(!html5QrCode || camerasDisponiveis.length < 2) return;
+  const config = {
+    fps: 12,
+    qrbox: { width: 280, height: 150 },
+    aspectRatio: 1.777778,
+    formatsToSupport: [
+      Html5QrcodeSupportedFormats.EAN_13,
+      Html5QrcodeSupportedFormats.EAN_8,
+      Html5QrcodeSupportedFormats.UPC_A,
+      Html5QrcodeSupportedFormats.UPC_E,
+      Html5QrcodeSupportedFormats.CODE_128,
+      Html5QrcodeSupportedFormats.CODE_39
+    ],
+    rememberLastUsedCamera: true,
+    showTorchButtonIfSupported: true,
+    showZoomSliderIfSupported: true,
+    focusMode: 'continuous',
+    videoConstraints: { advanced: [{ focusMode: 'continuous' }] }
+  };
+  try{
+    atualizarStatusScanner('Trocando de câmera...');
+    try{ await html5QrCode.stop(); }catch(e){}
+    cameraAtualIndex = (cameraAtualIndex + 1) % camerasDisponiveis.length;
+    scannerAtivo = true;
+    await iniciarStreamCamera(cameraAtualIndex, config);
+  }catch(err){
+    console.error('Erro ao trocar de câmera:', err);
+    showToast('Não foi possível trocar de câmera.');
+    atualizarStatusScanner('Não foi possível trocar de câmera.', false);
+  }
+}
+
+function pararScannerSemEsperar(){
+  const scanner = html5QrCode;
+  html5QrCode = null;
+  document.getElementById('scannerModal').style.display = 'none';
+  const btnFlip = document.getElementById('btnFlipCamera');
+  if(btnFlip) btnFlip.style.display = 'none';
+  if(scanner){
+    scanner.stop().then(() => { try{ scanner.clear(); }catch(e){} }).catch(() => {});
+  }
+  atualizarStatusScanner('Produto lido.');
+}
+
+function fecharScanner(){
+  scannerAtivo = false;
+  const modal = document.getElementById('scannerModal');
+  if(modal) modal.style.display = 'none';
+  const btnFlip = document.getElementById('btnFlipCamera');
+  if(btnFlip) btnFlip.style.display = 'none';
+  const scanner = html5QrCode;
+  html5QrCode = null;
+  if(scanner){
+    scanner.stop().then(() => { try{ scanner.clear(); }catch(e){} }).catch(() => {});
+  }
+  atualizarStatusScanner('Pronto para buscar ou escanear um produto.');
+}
+
+function sanitizeFilename(str){
+  return (str || 'loja').toString()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .replace(/[^a-zA-Z0-9]+/g,'_')
+    .replace(/^_+|_+$/g,'')
+    .slice(0,40) || 'loja';
+}
+
+async function gerarPDF(chave){
+  const ch = chave || lojaAtualChave;
+  const dados = lojasData[ch];
+  if(!dados || dados.itens.length === 0){
+    showToast('Essa loja ainda não tem itens cadastrados.');
+    return;
+  }
+
+  if(!window.jspdf || typeof window.jspdf.jsPDF !== 'function'){
+    showToast('Biblioteca do PDF não carregou. Verifique a internet e recarregue a página.');
+    console.error('jsPDF indisponível:', window.jspdf);
+    return;
+  }
+
+  const itensLoja = dados.itens;
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit: 'pt', format: 'a4' });
+  const pageWidth = doc.internal.pageSize.getWidth();
+
+  const promotor = dados.promotor || '(não informado)';
+  const loja = dados.nomeLoja || '(não informado)';
+  const dataLevIso = dados.dataLevantamento;
+  const dataLev = dataLevIso ? formatDate(dataLevIso) : '(não informado)';
+
+  // Cabecalho vermelho
+  doc.setFillColor(244, 0, 9);
+  doc.rect(0, 0, pageWidth, 60, 'F');
+  doc.setTextColor(255, 255, 255);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(16);
+  doc.text('CONTROLE DE VALIDADE', 40, 36);
+  doc.setFontSize(9);
+  doc.setFont('helvetica', 'normal');
+  doc.text('Coca-Cola · Levantamento de campo', 40, 50);
+
+  // Dados da visita
+  doc.setTextColor(30, 30, 30);
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'bold');
+  let y = 84;
+  doc.text('Promotor:', 40, y);
+  doc.text('Loja:', 230, y);
+  doc.text('Data do levantamento:', 400, y);
+  doc.setFont('helvetica', 'normal');
+  doc.text(promotor, 88, y);
+  doc.text(loja, 252, y);
+  doc.text(dataLev, 490, y);
+
+  // Linha separadora
+  doc.setDrawColor(220, 220, 220);
+  doc.line(40, y + 12, pageWidth - 40, y + 12);
+
+  const rows = itensLoja.map((it, i) => {
+    const dias = diasParaVencer(it.validade);
+    const statusTxt = dias < 0 ? `Vencido há ${Math.abs(dias)}d` : (dias <= 7 ? `${dias}d p/ vencer` : `${dias}d`);
+    return [String(i+1), it.descricao, it.codigo, formatDate(it.validade), String(it.quantidade), statusTxt];
+  });
+
+  if(typeof doc.autoTable === 'function'){
+    doc.autoTable({
+      startY: y + 24,
+      head: [['#', 'Descrição', 'Código', 'Validade', 'Qtd', 'Status']],
+      body: rows,
+      styles: { fontSize: 8.5, cellPadding: 5, valign: 'middle' },
+      headStyles: { fillColor: [244, 0, 9], textColor: 255, fontStyle: 'bold' },
+      alternateRowStyles: { fillColor: [247, 247, 247] },
+      columnStyles: {
+        0: { cellWidth: 24, halign: 'center' },
+        1: { cellWidth: 210 },
+        2: { cellWidth: 80 },
+        3: { cellWidth: 65, halign: 'center' },
+        4: { cellWidth: 40, halign: 'center' },
+        5: { cellWidth: 80, halign: 'center' }
+      },
+      didParseCell: function(data){
+        if(data.section === 'body'){
+          const it = itensLoja[data.row.index];
+          const dias = diasParaVencer(it.validade);
+          if(dias <= 7){
+            data.cell.styles.textColor = [200, 30, 30];
+            if(data.column.index === 3 || data.column.index === 5){
+              data.cell.styles.fontStyle = 'bold';
+            }
+          }
+        }
+      },
+      margin: { left: 40, right: 40 }
+    });
+  } else {
+    // Fallback: o PDF continua funcionando mesmo se o plugin AutoTable não carregar.
+    let yy = y + 30;
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(8.5);
+    doc.text('Itens registrados:', 40, yy);
+    yy += 16;
+    doc.setFont('helvetica', 'normal');
+    rows.forEach((r) => {
+      const linha = `${r[0]}. ${r[1]} | ${r[2]} | Val.: ${r[3]} | Qtd: ${r[4]} | ${r[5]}`;
+      const linhas = doc.splitTextToSize(linha, pageWidth - 80);
+      if(yy + linhas.length * 11 > 770){ doc.addPage(); yy = 45; }
+      doc.text(linhas, 40, yy);
+      yy += linhas.length * 11 + 5;
+    });
+  }
+
+  const finalY = (doc.lastAutoTable && doc.lastAutoTable.finalY) ? doc.lastAutoTable.finalY + 20 : 760;
+  if(finalY > 790){ doc.addPage(); }
+  const resumoY = finalY > 790 ? 45 : finalY;
+  doc.setTextColor(30,30,30);
+  doc.setFontSize(9.5);
+  doc.setFont('helvetica', 'bold');
+  doc.text(`Total de itens: ${itensLoja.length}`, 40, resumoY);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(120,120,120);
+  doc.setFontSize(8);
+  const agora = new Date();
+  doc.text(`Gerado em ${agora.toLocaleDateString('pt-BR')} às ${agora.toLocaleTimeString('pt-BR').slice(0,5)}`, 40, resumoY + 14);
+
+  const filename = `Controle_Validade_${sanitizeFilename(loja)}_${dataLevIso || 'sem_data'}.pdf`;
+
+  try{
+    // O botão PDF baixa direto via link, mais confiável do que depender do navigator.share().
+    const blob = doc.output('blob');
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    link.style.display = 'none';
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 30000);
+    showToast('✅ PDF gerado. Verifique a pasta Downloads.');
+  }catch(err){
+    console.error('Falha no download do PDF:', err);
+    // Último recurso: abre o PDF em nova aba para o usuário salvar pelo navegador.
+    try{
+      const blob = doc.output('blob');
+      const url = URL.createObjectURL(blob);
+      window.open(url, '_blank');
+      setTimeout(() => URL.revokeObjectURL(url), 60000);
+      showToast('PDF aberto. Use o menu do navegador para salvar.');
+    }catch(e){
+      showToast('Não foi possível gerar o PDF neste navegador.');
+    }
+  }
+}
+
+document.getElementById('btnScan').addEventListener('click', abrirScanner);
+document.getElementById('btnCloseScanner').addEventListener('click', fecharScanner);
+document.getElementById('btnFlipCamera').addEventListener('click', alternarCamera);
+document.getElementById('btnPdf').addEventListener('click', () => gerarPDF());
+window.addEventListener('pagehide', fecharScanner);
+</script>
+<script>
+
+  // ===== MENU PRINCIPAL =====
+  function abrirSecao(secao, botao){
+    document.querySelectorAll('.app-section').forEach(s => s.classList.remove('active'));
+    const alvo = document.getElementById(secao + 'Section');
+    if(alvo) alvo.classList.add('active');
+
+    document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
+    if(botao) botao.classList.add('active');
+
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+
+  // ===== CHECKLIST DE ATIVAÇÕES =====
+  const checklistsAtivacao = {
+  "Atacado (Cash)": [
+    {
+      "grupo": "Pilar Ativação",
+      "itens": [
+        [
+          "3101_1",
+          "Ponto Extra – SSD Coca-Cola TM MS + Sabores MS - Ocasião ‘Refeições’ na seção de Mercearia salgada ou Ponta de Gôndola de qualquer seção",
+          "",
+          6.0
+        ],
+        [
+          "3102_2",
+          "Ponto Extra – SSD Multipack Decorado Coca-Cola Original SS + Coca-Cola Sem Açúcar SS OU Sprite TM SS OU Chá SS - Ocasião ‘Meus Momentos’ na Ponta de Gôndola da seção de bebidas ou área de Checkouts ou Entrada do PDV",
+          "",
+          6.0
+        ],
+        [
+          "3108",
+          "Ponto Extra – STILL Del Valle Kapo SS ou STILL Del Valle Sucos SS ou Ades TM SS - Ocasião ‘Lancheiras’ na seção de Biscoitos doces ou Guloseimas ou Hortifruti ou área de nutrição do PDV",
+          "",
+          6.0
+        ],
+        [
+          "3107",
+          "Ponto Extra – STILL Del Valle Sucos ou Refrescos MS - Ocasião ‘Refeições STILL’ em qualquer seção do PDV",
+          "",
+          6.0
+        ],
+        [
+          "3104",
+          "Ponto Extra – STILL Águas TM SS ou MS + Powerade SS - Ocasião ‘Pausa para Hidratar’ em qualquer seção do PDV",
+          "",
+          6.0
+        ],
+        [
+          "3109_1_pa",
+          "Ponto Extra – Portfólio ‘+Economia’ em qualquer seção do PDV",
+          "",
+          6.0
+        ],
+        [
+          "3109_1_c",
+          "Comunicação – Campanha ‘+ Economia’ ativado em Ponto Extra em qualquer seção do PDV",
+          "",
+          3.0
+        ]
+      ]
+    },
+    {
+      "grupo": "Bônus",
+      "itens": [
+        [
+          "3120_p",
+          "Ponto Extra – ÉPICOS na Entrada da loja",
+          "",
+          3.0
+        ],
+        [
+          "3120_c",
+          "Comunicação ÉPICOS na Entrada da loja",
+          "",
+          1.0
+        ]
+      ]
+    }
+  ],
+  "Hiper/Super Mercado": [
+    {
+      "grupo": "Pilar Ativação",
+      "itens": [
+        [
+          "3101_1",
+          "Ponto Extra – SSD Coca-Cola TM MS + Sabores MS OU STILL DV Frut MS - Ocasião ‘Refeições’ na seção de Hortifruti ou Mercearia Salgada",
+          "",
+          3.0
+        ],
+        [
+          "3101_2",
+          "Ponto Extra – SSD Duals MS Coca-Cola TM + Sabores ou Duals MS Coca-Cola TM + Del Valle Sucos - Ocasião ‘Refeições’ na seção de Açougue ou Congelados",
+          "",
+          2.0
+        ],
+        [
+          "36bra311",
+          "Ponto Extra – STILL Del Valle Sucos MS + AdeS TM MS - Ocasião ‘Café da Manhã’ na seção de Padaria ou Ovos ou Cereais ou Cafés",
+          "",
+          2.0
+        ],
+        [
+          "36bra312",
+          "Ponto Extra – SSD Coca-Cola TM SS + Sprite TM SS ou Fanta TM SS - Ocasião ‘Meus Momentos’ na área de checkouts ou snacks",
+          "",
+          3.0
+        ],
+        [
+          "3108",
+          "Ponto Extra – STILL Del Valle Kapo SS ou STILL Del Valle Sucos SS ou Ades TM SS - Ocasião ‘Lancheiras’ na seção de Biscoitos Doces",
+          "",
+          2.0
+        ],
+        [
+          "3120_c",
+          "Ponto Extra Comercial – Comunicação ÉPICOS ativada no corredor principal ou entrada do PDV",
+          "",
+          0.8
+        ],
+        [
+          "3120_a",
+          "Ponto Extra Comercial – ÉPICOS ativada no corredor principal ou entrada do PDV",
+          "",
+          3.2
+        ],
+        [
+          "3118",
+          "Ponto Extra Comercial – Ponta de Gôndola SSD Coca-Cola Multipack Decorado SS + Sabores Multipack Decorado SS na seção de bebidas",
+          "",
+          3.0
+        ],
+        [
+          "3119",
+          "Ponto Extra Comercial – Ponta de Gôndola STILL MS ou SS na seção de bebidas",
+          "",
+          3.0
+        ],
+        [
+          "36bra313",
+          "Ponto Extra Comercial – SSD Sabores em qualquer seção do PDV",
+          "",
+          3.0
+        ]
+      ]
+    },
+    {
+      "grupo": "Bônus",
+      "itens": [
+        [
+          "3106",
+          "Ponto Extra – KO ARTD na seção de Cervejas premium",
+          "",
+          2.0
+        ],
+        [
+          "3124",
+          "Experiência - Combos de categorias com alimentos ou GDM no Self-Checkout ou Checkout Rápido",
+          "",
+          4.0
+        ],
+        [
+          "3112",
+          "Experiência no PDV ao consumidor (3Win ou Cold Wall ou Affordability)",
+          "",
+          4.0
+        ]
+      ]
+    }
+  ],
+  "Mini Mercado": [
+    {
+      "grupo": "Pilar Ativação",
+      "itens": [
+        [
+          "1101_a_1",
+          "Ponto Extra – SSD Coca-Cola TM MS + Sabores MS + STILL DV Frut MS com presença de retornáveis - Ocasião 'Refeições’ ou Campanha ‘+Economia’ na área interna",
+          "",
+          1.0
+        ],
+        [
+          "1101_c_1",
+          "Comunicação – Campanha '+Economia' para o Ponto Extra de SSD Coca-Cola TM MS Retornável + Sabores MS Retornável + STILL Refrescos MS Retornável na área interna",
+          "",
+          1.0
+        ],
+        [
+          "1101_a_2",
+          "Ponto Extra – SSD Coca-Cola TM MS + Sabores MS + STILL DV Frut MS na área interna – Ocasião 'Refeições'",
+          "",
+          1.0
+        ],
+        [
+          "1101_c_2",
+          "Comunicação – Ocasião 'Refeições' para o Ponto Extra de SSD Coca-Cola TM MS + Sabores MS + STILL DV Frut MS na área interna",
+          "",
+          1.0
+        ],
+        [
+          "1102_a",
+          "Ponto Extra FRIO – SSD Coca Cola TM SS + Sabores SS + Hidratação SS - Ocasião 'Meus Momentos’ ou Campanha ‘Mini preço, grande sabor’ - ativado em exibições geladas na área interna",
+          "",
+          2.0
+        ],
+        [
+          "1102_c_1",
+          "Comunicação – Ocasião 'Meus Momentos' para o Ponto Extra de SSD Coca Cola TM SS + Sabores SS + Hidratação SS ativado em exibições geladas na área interna",
+          "",
+          1.0
+        ],
+        [
+          "1102_c_2",
+          "Comunicação Campanha \"Mini preço, grande sabor“ em exibições geladas",
+          "",
+          1.0
+        ],
+        [
+          "16bra211_a",
+          "Ponto Extra – STILL Del Valle Kapo SS ou STILL Del Valle Sucos SS ou Ades TM SS - Ocasião 'Lancheiras' - na seção de Biscoitos",
+          "",
+          3.0
+        ],
+        [
+          "16bra211_c",
+          "Comunicação – Ocasião 'Lancheiras’ para o Ponto Extra de STILL Del Valle Kapo SS ou STILL Del Valle Sucos SS ou Ades TM SS na seção de Biscoitos",
+          "",
+          1.0
+        ],
+        [
+          "1101_c",
+          "Comunicação – Ocasião 'Refeições' ou Campanha ‘+ Economia’ para Ponto Extra de SSD Coca-Cola TM MS + Sabores MS + STILL DV Frut MS com presença de retornáveis na área interna",
+          "",
+          1.0
+        ],
+        [
+          "1102_c",
+          "Comunicação – Ocasião 'Meus Momentos’ ou Campanha ‘Mini preço, grande sabor’ para o Ponto Extra de SSD Coca Cola TM SS + Sabores SS + Hidratação SS ativado em exibições geladas na área interna",
+          "",
+          2.0
+        ],
+        [
+          "16bra111",
+          "Comunicação – SSD MS Retornável ou Campanha '+Economia' na Área Externa ou entrada de loja com disponibilidade obrigatória",
+          "",
+          2.0
+        ]
+      ]
+    }
+  ]
+};
+
+  let mercadoAtual = "Mini Mercado";
+
+  function renderChecklist(){
+    const container = document.getElementById('checklistItems');
+    if(!container) return;
+
+    const dados = checklistsAtivacao[mercadoAtual] || [];
+    const salvo = JSON.parse(localStorage.getItem('checklist_' + mercadoAtual) || '{}');
+    let htmlChecklist = '';
+
+    dados.forEach((grupo, gi) => {
+      const grupoTemPontos = grupo.itens.some(it => it[3] !== undefined);
+      const totalGrupoPts = grupo.itens.reduce((s, it) => s + (it[3] !== undefined ? it[3] : 0), 0);
+
+      htmlChecklist += '<div class="check-group">';
+      htmlChecklist += '<h3 class="check-group-title">' + grupo.grupo +
+        (grupoTemPontos ? ' <span class="group-pts">(' + formatPts(totalGrupoPts) + ' pts)</span>' : '') +
+        '</h3>';
+
+      grupo.itens.forEach((item, ii) => {
+        const id = 'check_' + gi + '_' + ii;
+        const checked = salvo[item[0]] ? 'checked' : '';
+        const pts = item[3] !== undefined ? item[3] : 1;
+        const ptsBadge = item[3] !== undefined ? `<b class="pts-badge">${formatPts(pts)} pts</b>` : '';
+        const temCodigoReal = /\d/.test(item[0]);
+        const codBadge = temCodigoReal ? `<span class="cod-badge">${item[0].toUpperCase()}</span>` : '';
+        const desc = item[2] ? `<small>${item[2]}</small>` : '';
+        htmlChecklist += `
+          <label class="check-item" for="${id}">
+            <input id="${id}" type="checkbox" data-key="${item[0]}" data-pts="${pts}" ${checked} onchange="atualizarProgressoChecklist()">
+            <span class="check-label">${codBadge}${item[1]} ${ptsBadge}${desc}</span>
+          </label>`;
+      });
+
+      htmlChecklist += '</div>';
+    });
+
+    container.innerHTML = htmlChecklist;
+    atualizarProgressoChecklist();
+  }
+
+  function selecionarTipoMercado(tipo, botao){
+    mercadoAtual = tipo;
+    document.querySelectorAll('.market-type').forEach(b => b.classList.remove('active'));
+    if(botao) botao.classList.add('active');
+
+    const nome = document.getElementById('mercadoSelecionado');
+    if(nome) nome.textContent = tipo;
+
+    renderChecklist();
+  }
+
+  function formatPts(n){
+    const r = Math.round(n * 10) / 10;
+    return (r % 1 === 0) ? String(r) : r.toFixed(1).replace('.', ',');
+  }
+
+  function atualizarProgressoChecklist(){
+    const inputs = document.querySelectorAll('#checklistItems input[type="checkbox"]');
+    let totalPts = 0, feitosPts = 0;
+    inputs.forEach(i => {
+      const pts = parseFloat(i.dataset.pts) || 0;
+      totalPts += pts;
+      if(i.checked) feitosPts += pts;
+    });
+    const pct = totalPts ? Math.round((feitosPts / totalPts) * 100) : 0;
+
+    const bar = document.getElementById('checkProgressBar');
+    const text = document.getElementById('checkProgressText');
+    if(bar) bar.style.width = pct + '%';
+    if(text) text.textContent = pct + '% concluído (' + formatPts(feitosPts) + '/' + formatPts(totalPts) + ' pts)';
+  }
+
+  function salvarChecklist(){
+    const dados = {};
+    document.querySelectorAll('#checklistItems input[type="checkbox"]').forEach(input => {
+      dados[input.dataset.key] = input.checked;
+    });
+
+    localStorage.setItem('checklist_' + mercadoAtual, JSON.stringify(dados));
+    if(typeof showToast === 'function') showToast('✅ Checklist salvo: ' + mercadoAtual);
+  }
+
+  function limparChecklist(){
+    document.querySelectorAll('#checklistItems input[type="checkbox"]').forEach(input => {
+      input.checked = false;
+    });
+    localStorage.removeItem('checklist_' + mercadoAtual);
+    atualizarProgressoChecklist();
+  }
+
+  document.addEventListener('DOMContentLoaded', renderChecklist);
+
+</script>
+<script>/* ===== SUPABASE / LOGIN / BANCO ONLINE =====
+   1) Crie um projeto em supabase.com
+   2) Execute o arquivo supabase_schema.sql no SQL Editor
+   3) Cole aqui a Project URL e a Publishable/anon key do projeto.
+   Nunca coloque a service_role key no navegador.
+*/
+const SUPABASE_URL = 'https://onkhderbtvknmqljnwum.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_JE69dw8U8_6C4ow9u4hwMQ_Oo-qLrEt';
+const CLOUD_CONFIGURED = !SUPABASE_URL.includes('COLE_AQUI') && !SUPABASE_ANON_KEY.includes('COLE_AQUI');
+let sb = null;
+let cloudUser = null;
+let authMode = 'login';
+
+function authMsg(msg, error=true){ const el=document.getElementById('authMsg'); if(el){el.textContent=msg||'';el.style.color=error?'#d6242c':'#0f8a3e';} }
+function setAuthLoading(on){ document.getElementById('authLoading').style.display=on?'flex':'none'; }
+function setAuthMode(mode){
+  authMode=mode;
+  const signup=mode==='signup';
+  document.getElementById('authTitle').textContent=signup?'Criar conta':'Entrar no Controle de Validade';
+  document.getElementById('authSubmit').textContent=signup?'Criar conta':'Entrar';
+  document.getElementById('authToggle').textContent=signup?'Já tenho uma conta':'Criar minha conta';
+  document.getElementById('authSignupFields').style.display=signup?'block':'none';
+  document.getElementById('authForgot').style.display=signup?'none':'inline-block';
+  authMsg('');
+}
+async function cloudLoad(){
+  if(!sb||!cloudUser)return;
+  setAuthLoading(true);
+  try{
+    const [{data:prods,error:e1},{data:visits,error:e2},{data:checks,error:e3}]=await Promise.all([
+      sb.from('products').select('codigo,descricao,custom').eq('user_id',cloudUser.id),
+      sb.from('visits').select('chave,nome_loja,promotor,data_levantamento,itens').eq('user_id',cloudUser.id),
+      sb.from('checklists').select('mercado,dados').eq('user_id',cloudUser.id)
+    ]);
+    if(e1) throw e1;if(e2) throw e2;if(e3) throw e3;
+    // Migra dados locais uma única vez se a conta ainda estiver vazia.
+    const localProducts=Array.isArray(produtosCustom)?produtosCustom:[];
+    const localVisits=(typeof lojasData==='object'&&lojasData)?lojasData:{};
+    if((prods||[]).length===0 && localProducts.length){
+      await sb.from('products').upsert(localProducts.map(p=>({user_id:cloudUser.id,codigo:String(p.codigo),descricao:p.descricao,custom:true})),{onConflict:'user_id,codigo'});
+    }
+    if((visits||[]).length===0 && Object.keys(localVisits).length){
+      const rows=Object.entries(localVisits).map(([ch,l])=>({user_id:cloudUser.id,chave:ch,nome_loja:l.nomeLoja||'',promotor:l.promotor||'',data_levantamento:l.dataLevantamento||null,itens:l.itens||[]}));
+      await sb.from('visits').upsert(rows,{onConflict:'user_id,chave'});
+    }
+    if((prods||[]).length===0 && localProducts.length){ const {data}=await sb.from('products').select('codigo,descricao,custom').eq('user_id',cloudUser.id); if(data) prods.splice(0,prods.length,...data); }
+    if((visits||[]).length===0 && Object.keys(localVisits).length){ const {data}=await sb.from('visits').select('chave,nome_loja,promotor,data_levantamento,itens').eq('user_id',cloudUser.id); if(data) visits.splice(0,visits.length,...data); }
+    if((prods||[]).length){
+      produtosCustom=(prods||[]).filter(p=>p.custom).map(p=>({descricao:p.descricao,codigo:String(p.codigo)}));
+      const mapa=new Map(PRODUTOS.map(p=>[String(p.codigo),p])); produtosCustom.forEach(p=>mapa.set(String(p.codigo),p)); PRODUTOS=Array.from(mapa.values());
+      localStorage.setItem('controleValidade_produtosCustom',JSON.stringify(produtosCustom));
+    }
+    if((visits||[]).length){
+      lojasData={}; (visits||[]).forEach(v=>{lojasData[v.chave]={nomeLoja:v.nome_loja||'',promotor:v.promotor||'',dataLevantamento:v.data_levantamento||'',itens:Array.isArray(v.itens)?v.itens:[]};});
+      localStorage.setItem('controleValidade_lojas',JSON.stringify(lojasData));
+    }
+    (checks||[]).forEach(c=>localStorage.setItem('checklist_'+c.mercado,JSON.stringify(c.dados||{})));
+    renderProdutos();renderHistorico();renderLista();renderLojasCatalogadas();
+  }catch(e){ console.error(e); showToast('⚠️ Não foi possível sincronizar a nuvem.'); }
+  finally{setAuthLoading(false);}
+}
+async function cloudSaveProducts(){
+  if(!sb||!cloudUser)return;
+  const rows=(produtosCustom||[]).map(p=>({user_id:cloudUser.id,codigo:String(p.codigo),descricao:p.descricao,custom:true}));
+  if(rows.length) await sb.from('products').upsert(rows,{onConflict:'user_id,codigo'});
+}
+async function cloudSaveVisits(){
+  if(!sb||!cloudUser)return;
+  const rows=Object.entries(lojasData||{}).map(([ch,l])=>({user_id:cloudUser.id,chave:ch,nome_loja:l.nomeLoja||'',promotor:l.promotor||'',data_levantamento:l.dataLevantamento||null,itens:l.itens||[]}));
+  if(rows.length) await sb.from('visits').upsert(rows,{onConflict:'user_id,chave'});
+}
+async function cloudDeleteVisit(chave){ if(sb&&cloudUser) await sb.from('visits').delete().eq('user_id',cloudUser.id).eq('chave',chave); }
+async function cloudSaveChecklist(){
+  if(!sb||!cloudUser)return;
+  const dados={}; document.querySelectorAll('#checklistItems input[type=checkbox]').forEach(i=>dados[i.dataset.key]=i.checked);
+  await sb.from('checklists').upsert({user_id:cloudUser.id,mercado:mercadoAtual,dados},{onConflict:'user_id,mercado'});
+}
+async function cloudDeleteChecklist(){ if(sb&&cloudUser) await sb.from('checklists').delete().eq('user_id',cloudUser.id).eq('mercado',mercadoAtual); }
+
+function instalarCloudOverrides(){
+  const oldSaveProducts=window.salvarProdutosCustom;
+  const oldSaveVisits=window.salvarLojasData;
+  const oldDeleteVisit=window.excluirLoja;
+  window.salvarProdutosCustom=function(){ try{localStorage.setItem('controleValidade_produtosCustom',JSON.stringify(produtosCustom));}catch(e){} cloudSaveProducts().catch(console.error); };
+  window.salvarLojasData=function(){ try{localStorage.setItem('controleValidade_lojas',JSON.stringify(lojasData));}catch(e){} cloudSaveVisits().catch(console.error); };
+  window.excluirLoja=oldDeleteVisit;
+}
+
+async function authBootstrap(){
+  if(!CLOUD_CONFIGURED){
+    document.getElementById('authGate').style.display='flex';
+    authMsg('Configure SUPABASE_URL e SUPABASE_ANON_KEY no arquivo antes de publicar.',true);
+    document.getElementById('authSubmit').disabled=true;
+    return;
+  }
+  if(!window.supabase){authMsg('Biblioteca Supabase não carregou. Verifique a internet.',true);return;}
+  sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+  const {data}=await sb.auth.getSession();
+  if(data.session) await onSignedIn(data.session.user); else document.getElementById('authGate').style.display='flex';
+  sb.auth.onAuthStateChange(async(_event,session)=>{ if(session) await onSignedIn(session.user); else onSignedOut(); });
+}
+async function onSignedIn(user){
+  cloudUser=user;
+  document.getElementById('authGate').style.display='none';
+  document.getElementById('authUserbar').style.display='block';
+  document.getElementById('authUserEmail').textContent=user.email||'';
+  instalarCloudOverrides();
+  await cloudLoad();
+}
+function onSignedOut(){ cloudUser=null;document.getElementById('authUserbar').style.display='none';document.getElementById('authGate').style.display='flex';setAuthMode('login'); }
+
+document.getElementById('authSubmit').addEventListener('click',async()=>{
+  if(!sb)return; const email=document.getElementById('authEmail').value.trim(), password=document.getElementById('authPassword').value, nome=document.getElementById('authName').value.trim(), telefone=document.getElementById('authPhone').value.trim();
+  if(!email||!password)return authMsg('Informe e-mail e senha.');
+  setAuthLoading(true);authMsg('');
+  try{
+    if(authMode==='signup'){
+      if(password.length<6)return authMsg('A senha precisa ter pelo menos 6 caracteres.');
+      const {data,error}=await sb.auth.signUp({email,password,options:{data:{nome,telefone}}}); if(error)throw error;
+      if(data.session) await onSignedIn(data.user); else authMsg('Conta criada. Verifique seu e-mail para confirmar o cadastro.',false);
+    }else{ const {data,error}=await sb.auth.signInWithPassword({email,password}); if(error)throw error; await onSignedIn(data.user); }
+  }catch(e){authMsg(e.message||'Não foi possível concluir a operação.');}
+  finally{setAuthLoading(false);}
+});
+document.getElementById('authToggle').addEventListener('click',()=>setAuthMode(authMode==='login'?'signup':'login'));
+document.getElementById('authForgot').addEventListener('click',async()=>{
+  if(!sb)return;const email=document.getElementById('authEmail').value.trim();if(!email)return authMsg('Digite seu e-mail primeiro.');
+  const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:location.origin+location.pathname}); if(error)authMsg(error.message);else authMsg('Link de recuperação enviado para seu e-mail.',false);
+});
+document.getElementById('authLogout').addEventListener('click',async()=>{if(sb)await sb.auth.signOut();});
+
+// Sobrescreve o salvamento de checklist para também ir à nuvem.
+const _salvarChecklistOriginal=window.salvarChecklist;
+window.salvarChecklist=async function(){ if(typeof _salvarChecklistOriginal==='function')_salvarChecklistOriginal(); await cloudSaveChecklist(); };
+const _limparChecklistOriginal=window.limparChecklist;
+window.limparChecklist=async function(){ if(typeof _limparChecklistOriginal==='function')_limparChecklistOriginal(); await cloudDeleteChecklist(); };
+
+window.addEventListener('DOMContentLoaded',authBootstrap);
+// >>> BYPASS TEMPORÁRIO PARA PREVIEW (apenas para visualizar o app sem login) <<<
+document.addEventListener('DOMContentLoaded', () => {
+  const gate = document.getElementById('authGate');
+  const bar = document.getElementById('authUserbar');
+  if (gate) gate.style.display = 'none';
+  if (bar) bar.style.display = 'none';
+});
+</script>
+</body>
+</html>
